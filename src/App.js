@@ -4,10 +4,18 @@ import './App.css';
 class App extends Component{
   constructor(props){
     super(props);
+    this.state = {
+      location:{
+        latitude:'',
+        longitude:''
+      }
+    };
+    this.getGeoLocation = this.getGeoLocation.bind(this);
   }
 
 //Lifecycle method (runs after the APP output has been rendered to the DOM)
   componentDidMount(){
+    this.getGeoLocation();
     this.renderMap();
   }
 
@@ -19,9 +27,24 @@ class App extends Component{
   initMap(){
     //to let the browser access google say window.google
     const map = new window.google.maps.Map(document.getElementById('map'), {
-         center: {lat: 55.86066, lng: 9.85034},
+         center: {lat: this.state.location.latitude, lng: this.state.location.longitude},
          zoom: 8
        });
+  }
+
+  getGeoLocation(){
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(
+      (position) =>{
+          this.setState({
+            location:{
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            }
+          })
+        }
+      )
+    }
   }
 
   render(){
