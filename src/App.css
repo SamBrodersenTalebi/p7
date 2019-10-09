@@ -20,3 +20,16 @@
 .App-link {
   color: #09d3ac;
 }
+
+#map{
+  /*vh is height of viewport*/
+  height: 100vh;
+  width: 50%;
+}
+
+/* Optional: Makes the sample page fill the window. */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
