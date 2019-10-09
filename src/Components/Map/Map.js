@@ -1,43 +1,44 @@
 import React, { Component } from 'react';
 import './Map.css';
 
-class Map extends Component{
+export default class Map extends Component{
 
-    //Lifecycle method (runs after the APP output has been rendered to the DOM)
-      componentDidMount(){
-        this.renderMap();
-      }
+  componentDidMount(){
+    this.renderMap();
+  }
 
-      initMap(){
-        let latitude;
-        let longitude;
+  initMap(){
+    let latitude;
+    let longitude;
 
-        //get current coordinates of user
-        if(navigator.geolocation){
-          navigator.geolocation.getCurrentPosition(
-            (position) =>{
-              latitude = position.coords.latitude;
-              longitude = position.coords.longitude
-            }
-          );
+    //get current coordinates of user
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(
+        (position)=>{
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+        }
+      )
+    }
 
-        //to let the browser access google say window.google
-        const map = new window.google.maps.Map(document.getElementById('map'), {
-             center: {lat: latitude, lng: longitude},
-             zoom: 8
-           });
-      }
+    //let browser access google by saying window.google
+    const map = new window.google.maps.Map(document.getElementById('map'),{
+      center: {lat: latitude, lng: longitude},
+      zoom: 8
+    });
+  }
 
-      renderMap(){
-        loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap");
-        window.initMap = this.initMap;
-      }
+  renderMap(){
+    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap");
+    window.initMap = this.initMap;
+  }
 
-      render(){
-        return(
-          <div id="map"> <div>
-        );
-      }
+  render(){
+    return(
+      <div id="map"> </div>
+    )
+  }
+
 }
 
 /*
@@ -58,5 +59,3 @@ function loadScript(url){
   //select first script tag and select parentNode and insert the script before it
   index.parentNode.insertBefore(script, index);
 }
-
-export default Map;
