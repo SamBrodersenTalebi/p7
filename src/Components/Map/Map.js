@@ -23,7 +23,7 @@ export default class Map extends Component{
 
     //let browser access google by saying window.google
     const map = new window.google.maps.Map(document.getElementById('map'),{
-      center: {lat: latitude, lng: longitude},
+      center: {lat: 55.8581, lng: 9.8476},
       zoom: 8
     });
   }
