@@ -46,8 +46,12 @@ class App extends Component{
   render(){
     return(
       <main>
-        <Map />
-
+        <div className="map-div">
+          <Map />
+        </div>
+        <div className="restaurants-div">
+          <RestaurantList data = {this.state.data} />
+        </div>
       </main>
     );
   }

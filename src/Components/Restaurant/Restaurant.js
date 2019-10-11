@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Review from '../Review/Review'
 import './Restaurant.css';
 
 export default class Restaurant extends Component{
@@ -14,7 +15,7 @@ export default class Restaurant extends Component{
           {this.props.restaurant.restaurantName}
         </h3>
         <p className="address">
-          {this.props.restaurant.address}
+          <span className="fat">Restaurant Address: </span>{this.props.restaurant.address}
         </p>
         {review}
       </div>
