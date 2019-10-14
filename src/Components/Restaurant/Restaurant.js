@@ -4,9 +4,10 @@ import './Restaurant.css';
 
 export default class Restaurant extends Component{
   render(){
+    let i = 0;
     let review = this.props.restaurant.ratings.map((rating)=>{
       return(
-        <Review stars = {rating.stars} comment = {rating.comment} />
+        <Review stars = {rating.stars} comment = {rating.comment} key={i++} />
       );
     })
     return(
