@@ -41,3 +41,11 @@ html, body {
   float:left;
 }
 */
+
+.flex-container{
+  display:flex;
+}
+
+.flex-container > div{
+  width:50%;
+}

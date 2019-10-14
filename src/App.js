@@ -46,7 +46,7 @@ class App extends Component{
 
   render(){
     return(
-      <main>
+      <main clasName="flex-container">
         <div className="map-div">
           <Map />
         </div>

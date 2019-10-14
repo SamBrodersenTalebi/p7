@@ -7,36 +7,46 @@ export default class RestaurantList extends Component{
   constructor(props){
     super(props);
     this.state={
-      value: 3,
+      minValue: 1,
+      maxValue:5,
       restaurant:this.props.data
     }
-    this.handler = this.handler.bind(this);
+    this.minHandler = this.minHandler.bind(this);
+    this.maxHandler = this.maxHandler.bind(this);
   }
 
-  handler(event){
+  minHandler(event){
     this.setState({
-      value: event.target.value
+      minValue: event.target.value
+    })
+    console.log(this.state.value)
+  }
+
+  maxHandler(event){
+    this.setState({
+      maxValue: event.target.value
     })
     console.log(this.state.value)
   }
 
   render(){
     let i = 0;
-    //pass each restaurant object to the Restaurant Class instance
+    //pass each restaurant object to the Restaurant Class instance based on the filter
     let restaurants = this.state.restaurant.map((restObject) =>{
       let ratings = restObject.ratings;
       for(let i = 0; i < ratings.length; i++){
-        if(ratings[i].stars >= this.state.value){
+        if(ratings[i].stars >= this.state.minValue && ratings[i].stars <= this.state.maxValue ){
           return(
             <Restaurant restaurant = {restObject} key={i++} />
           )
         }
+        return null;
       }
     });
-    
+
     return(
       <div className = "restaurantList">
-        <Filter value = {this.state.value} handler = {this.handler} />
+        <Filter minValue = {this.state.minValue} maxValue={this.state.maxValue} minHandler = {this.minHandler} maxHandler = {this.maxHandler} />
         {restaurants}
       </div>
     );
