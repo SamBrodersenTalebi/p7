@@ -31,7 +31,7 @@ class App extends Component{
       "long":2.3442197,
       "ratings":[
          {
-            "stars":5,
+            "stars":2,
             "comment":"Tiny pizzeria next to Sacre Coeur!"
          },
          {

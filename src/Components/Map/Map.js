@@ -8,22 +8,27 @@ export default class Map extends Component{
   }
 
   initMap(){
-    let latitude;
-    let longitude;
+    let latitude = 0;
+    let longitude = 0;
 
+    //ASYNC CALL
     //get current coordinates of user
     if(navigator.geolocation){
-      navigator.geolocation.getCurrentPosition(
-        (position)=>{
-          latitude = position.coords.latitude;
-          longitude = position.coords.longitude;
-        }
-      )
+      navigator.geolocation.getCurrentPosition(showPosition)
+    } else{
+      console.log('Can not get geolocation!')
     }
+
+    function showPosition(position){
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+    }
+    console.log(latitude);
+    console.log(longitude);
 
     //let browser access google by saying window.google
     const map = new window.google.maps.Map(document.getElementById('map'),{
-      center: {lat: 55.8581, lng: 9.8476},
+      center: {lat: latitude, lng: longitude},
       zoom: 8
     });
   }

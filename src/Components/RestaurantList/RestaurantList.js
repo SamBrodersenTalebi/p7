@@ -33,17 +33,20 @@ export default class RestaurantList extends Component{
     let i = 0;
     //pass each restaurant object to the Restaurant Class instance based on the filter
     let restaurants = this.state.restaurant.map((restObject) =>{
-      let ratings = restObject.ratings;
+      let ratings = restObject.ratings
+      let average = 0;
       for(let i = 0; i < ratings.length; i++){
-        if(ratings[i].stars >= this.state.minValue && ratings[i].stars <= this.state.maxValue ){
-          return(
-            <Restaurant restaurant = {restObject} key={i++} />
-          )
+        average += ratings[i].stars;
         }
-        return null;
-      }
-    });
-
+        average /= ratings.length;
+        if(average >= this.state.minValue && average <= this.state.maxValue){
+          return(<Restaurant restaurant = {restObject} key={i++}/>);
+        }
+      });
+      //RENDER MAP COMPONENT IN RestaurantList CLASS!
+      //WHEN YOU CLICK ON THE MARKER STREETVIEW SHOULD APPEAR AND INFOWINDOW WITH REVIEWS
+      //CLICK ON RESTAURANT MARKER AND HAVE A FORM ADD A REVIEW
+      //HAVE CLICK HANDLER ON MAP WHICH RETURNS THE LAT AND LNG OF THE CLICK AND HAVE A INFOWINDOW POP UP WHERE YOU CAN ADD A REVIEW
     return(
       <div className = "restaurantList">
         <Filter minValue = {this.state.minValue} maxValue={this.state.maxValue} minHandler = {this.minHandler} maxHandler = {this.maxHandler} />
