@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import RestaurantList from './Components/RestaurantList/RestaurantList'
-import Map from './Components/Map/Map';
 import Filter from './Components/Filter/Filter';
 
 class App extends Component{
@@ -47,9 +46,6 @@ class App extends Component{
   render(){
     return(
       <main clasName="flex-container">
-        <div className="map-div">
-          <Map />
-        </div>
         <div className="restaurants-div">
           <RestaurantList data = {this.state.data} />
         </div>

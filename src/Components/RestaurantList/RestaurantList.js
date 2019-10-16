@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './RestaurantList.css';
 import Restaurant from '../Restaurant/Restaurant';
 import Filter from '../Filter/Filter';
+import Map from '../Map/Map';
 
 export default class RestaurantList extends Component{
   constructor(props){
@@ -30,6 +31,7 @@ export default class RestaurantList extends Component{
   }
 
   render(){
+    let coords = [];
     let i = 0;
     //pass each restaurant object to the Restaurant Class instance based on the filter
     let restaurants = this.state.restaurant.map((restObject) =>{
@@ -40,6 +42,8 @@ export default class RestaurantList extends Component{
         }
         average /= ratings.length;
         if(average >= this.state.minValue && average <= this.state.maxValue){
+          let coordinates = {"lat": restObject.lat, "long": restObject.long}
+          coords.push(coordinates);
           return(<Restaurant restaurant = {restObject} key={i++}/>);
         }
       });
@@ -48,10 +52,16 @@ export default class RestaurantList extends Component{
       //CLICK ON RESTAURANT MARKER AND HAVE A FORM ADD A REVIEW
       //HAVE CLICK HANDLER ON MAP WHICH RETURNS THE LAT AND LNG OF THE CLICK AND HAVE A INFOWINDOW POP UP WHERE YOU CAN ADD A REVIEW
     return(
-      <div className = "restaurantList">
-        <Filter minValue = {this.state.minValue} maxValue={this.state.maxValue} minHandler = {this.minHandler} maxHandler = {this.maxHandler} />
-        {restaurants}
+      <div>
+        <div className="map-div">
+          <Map coords = {coords}/>
+        </div>
+        <div className = "restaurantList">
+          <Filter minValue = {this.state.minValue} maxValue={this.state.maxValue} minHandler = {this.minHandler} maxHandler = {this.maxHandler} />
+          {restaurants}
+        </div>
       </div>
+
     );
   }
 }

@@ -1,36 +1,45 @@
 import React, { Component } from 'react';
 import './Map.css';
 
+
+let lat = 0;
+let long = 0;
+let map = 0;
+
 export default class Map extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      latitude:0,
+      longitude:0
+    }
+  }
 
   componentDidMount(){
+    navigator.geolocation.getCurrentPosition((position) =>{
+      lat = parseFloat(position.coords.latitude);
+      long = parseFloat(position.coords.longitude);
+    })
     this.renderMap();
   }
 
   initMap(){
-    let latitude = 0;
-    let longitude = 0;
-
-    //ASYNC CALL
-    //get current coordinates of user
-    if(navigator.geolocation){
-      navigator.geolocation.getCurrentPosition(showPosition)
-    } else{
-      console.log('Can not get geolocation!')
-    }
-
-    function showPosition(position){
-      latitude = position.coords.latitude;
-      longitude = position.coords.longitude;
-    }
-    console.log(latitude);
-    console.log(longitude);
-
     //let browser access google by saying window.google
-    const map = new window.google.maps.Map(document.getElementById('map'),{
-      center: {lat: latitude, lng: longitude},
+    map = new window.google.maps.Map(document.getElementById('map'),{
+      center: {lat:lat, lng: long},
       zoom: 8
     });
+
+    console.log(map);
+  }
+
+  addMarker(coordinates, imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'){
+    console.log(map)
+    var marker = new window.google.maps.Marker({
+      position:coordinates,
+      icon:imageURL
+    });
+    marker.setMap(map);
   }
 
   renderMap(){
@@ -39,6 +48,12 @@ export default class Map extends Component{
   }
 
   render(){
+    let coordinates = this.props.coords;
+    for(let i = 0; i < coordinates.length; i++){
+      this.addMarker(coordinates[i]);
+    }
+
+
     return(
       <div id="map"> </div>
     )
