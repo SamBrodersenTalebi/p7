@@ -31,12 +31,9 @@ export default class Map extends Component{
       zoom: 8
     });
 
-    window.google.maps.event.addListener(map, 'click', function (e) {
-      alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
-    });
-
     console.log(this.state.coordinates)
 
+    //add markers for each restaurant
     this.state.coordinates.map((venue) => {
       var marker = new window.google.maps.Marker({
         position:{lat: venue.lat, lng: venue.long},
@@ -44,6 +41,15 @@ export default class Map extends Component{
         icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
       });
     })
+
+    //add marker on click
+    window.google.maps.event.addListener(map, 'click', function (e) {
+      alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
+      var marker = new window.google.maps.Marker({
+        position:{lat:e.latLng.lat(), lng: e.latLng.lng()},
+        map: map,
+      });
+    });
   }
 
   addMarker(coordinates, imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'){
