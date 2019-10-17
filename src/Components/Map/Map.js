@@ -4,18 +4,19 @@ import './Map.css';
 
 let lat = 0;
 let long = 0;
-let map = 0;
 
 export default class Map extends Component{
   constructor(props){
     super(props);
     this.state = {
       latitude:0,
-      longitude:0
+      longitude:0,
+      coordinates: this.props.coords
     }
+    this.initMap = this.initMap.bind(this);
   }
 
-  componentDidMount(){
+  async componentDidMount(){
     navigator.geolocation.getCurrentPosition((position) =>{
       lat = parseFloat(position.coords.latitude);
       long = parseFloat(position.coords.longitude);
@@ -25,27 +26,39 @@ export default class Map extends Component{
 
   initMap(){
     //let browser access google by saying window.google
-    map = new window.google.maps.Map(document.getElementById('map'),{
+    let map = new window.google.maps.Map(document.getElementById('map'),{
       center: {lat:lat, lng: long},
       zoom: 8
     });
 
-    console.log(map);
+    window.google.maps.event.addListener(map, 'click', function (e) {
+      alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
+    });
+
+    console.log(this.state.coordinates)
+
+    this.state.coordinates.map((venue) => {
+      var marker = new window.google.maps.Marker({
+        position:{lat: venue.lat, lng: venue.long},
+        map: map,
+        icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
+      });
+    })
   }
 
   addMarker(coordinates, imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'){
-    console.log(map)
     var marker = new window.google.maps.Marker({
       position:coordinates,
-      icon:imageURL
+      icon:imageURL,
+      map:this.state.map
     });
-    marker.setMap(map);
   }
 
   renderMap(){
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap");
     window.initMap = this.initMap;
   }
+
 
   render(){
     /*
@@ -54,6 +67,7 @@ export default class Map extends Component{
       this.addMarker(coordinates[i]);
     }
     */
+
 
 
     return(
