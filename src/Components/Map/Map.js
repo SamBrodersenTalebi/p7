@@ -48,10 +48,12 @@ export default class Map extends Component{
   }
 
   render(){
+    /*
     let coordinates = this.props.coords;
     for(let i = 0; i < coordinates.length; i++){
       this.addMarker(coordinates[i]);
     }
+    */
 
 
     return(
