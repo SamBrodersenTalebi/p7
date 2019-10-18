@@ -31,10 +31,24 @@ export default class Map extends Component{
       zoom: 8
     });
 
-    console.log(this.state.coordinates)
+    //Users current position marker
+    // IF YOU COULD USE MARKER FUNCTION IT WOULD WORK!!
 
     //Create a infowindow
-    var infowindow = new window.google.maps.InfoWindow();
+    var infowindow = new window.google.maps.InfoWindow({map:map});
+
+    //Streetview
+    let panorama = new window.google.maps.StreetViewPanorama(
+      document.getElementById('pano'),{
+        position: {lat: lat, lng: long},
+        pov: {
+          heading: 34,
+          pitch: 10
+        }
+      });
+  map.setStreetView(panorama);
+
+
 
     //add markers for each restaurant
     this.state.coordinates.map((venue) => {
@@ -65,8 +79,37 @@ export default class Map extends Component{
         position:{lat:e.latLng.lat(), lng: e.latLng.lng()},
         map: map,
       });
+
+      //add marker window
+      marker.addListener('click',function(){
+        //wait for user input
+        infowindow.setContent('<input placeholder="Add restaurant name" type="text" class="info-popup" onkeypress ="myFunction()">')
+        //open infoWindow
+        infowindow.open(map,marker)
+      })
     });
+
+    let input = document.getElementsByClassName('info-popup')
+    /*
+    function myFunction(e){
+      var key = e.which || e.keyCode;
+      if(key === 13){
+        let input = document.getElementsByClassName('info-popup');
+        let textContent = input.textContent;
+        input.innerHTML = `<h2> Restaurant name: ${textContent} </h2>`;
+      }
+    }
+
+    input.addEventListener('keypress', function(e){
+      var key = e.which || e.keyCode;
+      if(key === 13){
+        let textContent = input.textContent;
+        input.innerHTML = `<h2> Restaurant name: ${textContent} </h2>`
+      }
+    })
+    */
   }
+
 
   addMarker(coordinates, imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'){
     var marker = new window.google.maps.Marker({
@@ -91,7 +134,11 @@ export default class Map extends Component{
     */
 
     return(
-      <div id="map"> </div>
+      <div className="map-container">
+        <div id="map"> </div>
+        <div id="pano"> </div>
+      </div>
+
     )
   }
 
