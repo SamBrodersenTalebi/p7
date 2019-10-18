@@ -33,13 +33,29 @@ export default class Map extends Component{
 
     console.log(this.state.coordinates)
 
+    //Create a infowindow
+    var infowindow = new window.google.maps.InfoWindow();
+
     //add markers for each restaurant
     this.state.coordinates.map((venue) => {
+
+      //content for infowindow
+      var contentString = `<h2>Restaurant name: ${venue.name}</h2>`
+
+      //Create a marker
       var marker = new window.google.maps.Marker({
         position:{lat: venue.lat, lng: venue.long},
         map: map,
         icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
       });
+
+      //Markers listen for a click event which will open InfoWindow
+      marker.addListener('click',function(){
+        //change content
+        infowindow.setContent(contentString)
+        //open infowindow
+        infowindow.open(map,marker);
+      })
     })
 
     //add marker on click
@@ -73,8 +89,6 @@ export default class Map extends Component{
       this.addMarker(coordinates[i]);
     }
     */
-
-
 
     return(
       <div id="map"> </div>

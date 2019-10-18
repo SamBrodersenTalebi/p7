@@ -42,7 +42,7 @@ export default class RestaurantList extends Component{
         }
         average /= ratings.length;
         if(average >= this.state.minValue && average <= this.state.maxValue){
-          let coordinates = {"lat": restObject.lat, "long": restObject.long}
+          let coordinates = {"lat": restObject.lat, "long": restObject.long, "name": restObject.restaurantName}
           coords.push(coordinates);
           return(<Restaurant restaurant = {restObject} key={i++}/>);
         }
