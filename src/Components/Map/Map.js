@@ -25,6 +25,7 @@ export default class Map extends Component{
   }
 
   initMap(){
+    console.log(this.state.coordinates)
     //let browser access google by saying window.google
     let map = new window.google.maps.Map(document.getElementById('map'),{
       center: {lat:lat, lng: long},

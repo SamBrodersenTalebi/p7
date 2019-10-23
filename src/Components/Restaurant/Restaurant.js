@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Review from '../Review/Review'
 import './Restaurant.css';
-import Userreview from '../Userreview/Userreview';
 
 export default class Restaurant extends Component{
   constructor(props){
@@ -10,11 +9,13 @@ export default class Restaurant extends Component{
       form:false,
       review: this.props.restaurant.ratings,
       text:'',
-      rating:1
+      rating:1,
+      showReview:false
     }
     this.toggleForm = this.toggleForm.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
 
@@ -43,6 +44,11 @@ export default class Restaurant extends Component{
     this.setState({
       [name]: event.target.value
     })
+  }
+
+  handleClick(){
+    const { showReview } = this.state;
+    this.setState({showReview:!showReview})
   }
 
   render(){

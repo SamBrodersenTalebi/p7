@@ -45,6 +45,8 @@ export default class RestaurantList extends Component{
           let coordinates = {"lat": restObject.lat, "long": restObject.long, "name": restObject.restaurantName}
           coords.push(coordinates);
           return(<Restaurant restaurant = {restObject} key={i++}/>);
+        }else{
+          return null;
         }
       });
       //RENDER MAP COMPONENT IN RestaurantList CLASS!
@@ -52,7 +54,7 @@ export default class RestaurantList extends Component{
       //CLICK ON RESTAURANT MARKER AND HAVE A FORM ADD A REVIEW
       //HAVE CLICK HANDLER ON MAP WHICH RETURNS THE LAT AND LNG OF THE CLICK AND HAVE A INFOWINDOW POP UP WHERE YOU CAN ADD A REVIEW
     return(
-      <div>
+      <div className = "container">
         <div className="map-div">
           <Map coords = {coords}/>
         </div>

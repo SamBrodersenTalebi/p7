@@ -1,0 +1,13 @@
+
+.container{
+  display:flex;
+  width:100%
+}
+
+.map-div{
+  width:70%
+}
+
+.restaurantList{
+  width: 30%
+}

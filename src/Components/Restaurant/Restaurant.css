@@ -7,3 +7,7 @@
 a:hover {
   color: blue;
 }
+
+.name, .address{
+  text-align: center;
+}

@@ -1,0 +1,13 @@
+.filter-p{
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.filter input{
+  margin-right: 5px;
+}
+
+.filter{
+  text-align: center;
+}
