@@ -45,11 +45,12 @@ class App extends Component{
   }
 
   componentDidMount(){
+    //Use google api built in functions
     //place_id is an ID for a specific place in this case we use the place_id for Horsens
     fetch("https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJrWoV7FdgTEYRxvncjZpjPfU&radius=5000&types=restaurants&key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM")
     .then((response) => response.json())
-    .then((data)=> this.setState({places: data}));
-    console.log(this.state.places);
+    .then((data)=> this.setState({places: data}, ()=>
+      console.log(this.state.places)));
   }
 
   render(){

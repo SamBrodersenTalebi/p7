@@ -52,7 +52,6 @@ export default class Restaurant extends Component{
   }
 
   render(){
-    console.log(this.state.form)
     let i = 0;
     let review = this.state.review.map((rating)=>{
       return(

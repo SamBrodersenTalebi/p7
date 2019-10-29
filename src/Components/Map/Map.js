@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './Map.css';
+//geo location api
 
-
+//let map = 0;
 let lat = 0;
 let long = 0;
 
@@ -9,14 +10,14 @@ export default class Map extends Component{
   constructor(props){
     super(props);
     this.state = {
-      latitude:0,
-      longitude:0,
-      coordinates: this.props.coords
+      map: 0
     }
     this.initMap = this.initMap.bind(this);
   }
 
-  async componentDidMount(){
+
+ componentDidMount(){
+   //get current position.
     navigator.geolocation.getCurrentPosition((position) =>{
       lat = parseFloat(position.coords.latitude);
       long = parseFloat(position.coords.longitude);
@@ -25,18 +26,12 @@ export default class Map extends Component{
   }
 
   initMap(){
-    console.log(this.state.coordinates)
+
     //let browser access google by saying window.google
-    let map = new window.google.maps.Map(document.getElementById('map'),{
+    this.map = new window.google.maps.Map(document.getElementById('map'),{
       center: {lat:lat, lng: long},
       zoom: 8
     });
-
-    //Users current position marker
-    // IF YOU COULD USE MARKER FUNCTION IT WOULD WORK!!
-
-    //Create a infowindow
-    var infowindow = new window.google.maps.InfoWindow({map:map});
 
     //Streetview
     let panorama = new window.google.maps.StreetViewPanorama(
@@ -47,38 +42,14 @@ export default class Map extends Component{
           pitch: 10
         }
       });
-  map.setStreetView(panorama);
-
-
-
-    //add markers for each restaurant
-    this.state.coordinates.map((venue) => {
-
-      //content for infowindow
-      var contentString = `<h2>Restaurant name: ${venue.name}</h2>`
-
-      //Create a marker
-      var marker = new window.google.maps.Marker({
-        position:{lat: venue.lat, lng: venue.long},
-        map: map,
-        icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
-      });
-
-      //Markers listen for a click event which will open InfoWindow
-      marker.addListener('click',function(){
-        //change content
-        infowindow.setContent(contentString)
-        //open infowindow
-        infowindow.open(map,marker);
-      })
-    })
+  this.map.setStreetView(panorama);
 
     //add marker on click
-    window.google.maps.event.addListener(map, 'click', function (e) {
+    window.google.maps.event.addListener(this.map, 'click', function (e) {
       alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
       var marker = new window.google.maps.Marker({
         position:{lat:e.latLng.lat(), lng: e.latLng.lng()},
-        map: map,
+        map: this.map,
       });
 
       //add marker window
@@ -86,38 +57,33 @@ export default class Map extends Component{
         //wait for user input
         infowindow.setContent('<input placeholder="Add restaurant name" type="text" class="info-popup" onkeypress ="myFunction()">')
         //open infoWindow
-        infowindow.open(map,marker)
+        infowindow.open(this.map,marker)
       })
     });
 
-    let input = document.getElementsByClassName('info-popup')
-    /*
-    function myFunction(e){
-      var key = e.which || e.keyCode;
-      if(key === 13){
-        let input = document.getElementsByClassName('info-popup');
-        let textContent = input.textContent;
-        input.innerHTML = `<h2> Restaurant name: ${textContent} </h2>`;
-      }
-    }
-
-    input.addEventListener('keypress', function(e){
-      var key = e.which || e.keyCode;
-      if(key === 13){
-        let textContent = input.textContent;
-        input.innerHTML = `<h2> Restaurant name: ${textContent} </h2>`
-      }
-    })
-    */
   }
 
 
-  addMarker(coordinates, imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'){
+  addMarker = (coordinates, imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png', name)=>{
     var marker = new window.google.maps.Marker({
       position:coordinates,
       icon:imageURL,
-      map:this.state.map
+      map:this.map
     });
+
+    //Create a infowindow
+    var infowindow = new window.google.maps.InfoWindow({map:this.map});
+
+    //content for infowindow
+    var contentString = `<h2>Restaurant name: ${name}</h2>`
+
+    //Markers listen for a click event which will open InfoWindow
+    marker.addListener('click',function(){
+      //change content
+      infowindow.setContent(contentString)
+      //open infowindow
+      infowindow.open(this.map,marker);
+    })
   }
 
   renderMap(){
@@ -127,12 +93,13 @@ export default class Map extends Component{
 
 
   render(){
-    /*
+    console.log(this.props.coords);
+    let names = this.props.name;
     let coordinates = this.props.coords;
     for(let i = 0; i < coordinates.length; i++){
-      this.addMarker(coordinates[i]);
+      this.addMarker(coordinates[i],names[i]);
     }
-    */
+
 
     return(
       <div className="map-container">
