@@ -9,9 +9,6 @@ let long = 0;
 export default class Map extends Component{
   constructor(props){
     super(props);
-    this.state = {
-      map: 0
-    }
     this.initMap = this.initMap.bind(this);
   }
 
@@ -33,16 +30,6 @@ export default class Map extends Component{
       zoom: 8
     });
 
-    //Streetview
-    let panorama = new window.google.maps.StreetViewPanorama(
-      document.getElementById('pano'),{
-        position: {lat: lat, lng: long},
-        pov: {
-          heading: 34,
-          pitch: 10
-        }
-      });
-  this.map.setStreetView(panorama);
 
     //add marker on click
     window.google.maps.event.addListener(this.map, 'click', function (e) {
@@ -65,7 +52,7 @@ export default class Map extends Component{
     this.props.googleIsLoaded();
 
   }
-
+  
 
   addMarker = (coordinates,name)=>{
     if(window.google){
@@ -75,18 +62,41 @@ export default class Map extends Component{
         //map:this.map
       });
       marker.setMap(this.map);
-  
+      
+
+      // Create the shared infowindow with two DIV placeholders
+      //one for streetview and the other for content string
+      var content = document.createElement("DIV");
+      var streetview = document.createElement("DIV");
+      streetview.setAttribute("id", `${name}`);
+      streetview.style.width = "200px";
+      streetview.style.height = "200px";
+      content.appendChild(streetview);
+      //content for infowindow
+      var contentString = `<h2>Restaurant name: ${name}</h2>`
+      content.appendChild(contentString);
+
+      
+      //Streetview
+      let panorama = new window.google.maps.StreetViewPanorama(
+      document.getElementById(`${name}`),{
+        position: {lat: coordinates[0], lng: coordinates[1]},
+        pov: {
+          heading: 34,
+          pitch: 10
+        }
+      });
+      this.map.setStreetView(panorama);
+
       
       //Create a infowindow
       var infowindow = new window.google.maps.InfoWindow({map:this.map});
   
-      //content for infowindow
-      var contentString = `<h2>Restaurant name: ${name}</h2>`
   
       //Markers listen for a click event which will open InfoWindow
       marker.addListener('click',function(){
         //change content
-        infowindow.setContent(contentString)
+        infowindow.setContent(content)
         //open infowindow
         infowindow.open(this.map,marker);
       })
@@ -114,7 +124,6 @@ export default class Map extends Component{
     return(
       <div className="map-container">
         <div id="map"> </div>
-        <div id="pano"> </div>
       </div>
 
     )

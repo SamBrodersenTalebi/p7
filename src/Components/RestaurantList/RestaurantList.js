@@ -56,11 +56,12 @@ export default class RestaurantList extends Component{
         }
       });
       this.setState({
-        restaurants: restaurants,
         restaurantNames: restaurantNames,
-        coords: coords
+        coords: coords,
+        restaurants: restaurants
       })
   }
+
 
   render(){
     return(
@@ -77,3 +78,5 @@ export default class RestaurantList extends Component{
     );
   }
 }
+
+// I need to update which restaurants are being displayed based on the filter but currently the state of restaurants are set once once the map is rendered
