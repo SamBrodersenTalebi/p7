@@ -10,10 +10,13 @@ export default class RestaurantList extends Component{
     this.state={
       minValue: 1,
       maxValue:5,
-      restaurant:this.props.data
+      coords:"",
+      restaurants:"",
+      restaurantNames:""
     }
     this.minHandler = this.minHandler.bind(this);
     this.maxHandler = this.maxHandler.bind(this);
+    this.setData = this.setData.bind(this);
   }
 
   minHandler(event){
@@ -30,12 +33,12 @@ export default class RestaurantList extends Component{
     console.log(this.state.value)
   }
 
-  render(){
+  setData(){
     let restaurantNames = [];
     let coords = [];
     let i = 0;
     //pass each restaurant object to the Restaurant Class instance based on the filter
-    let restaurants = this.state.restaurant.map((restObject) =>{
+    let restaurants = this.props.data.map((restObject) =>{
       let ratings = restObject.ratings
       let average = 0;
       for(let i = 0; i < ratings.length; i++){
@@ -43,7 +46,7 @@ export default class RestaurantList extends Component{
         }
         average /= ratings.length;
         if(average >= this.state.minValue && average <= this.state.maxValue){
-          let coordinates = {"lat": restObject.lat, "long": restObject.long}
+          let coordinates = {"lat": restObject.lat, "lng": restObject.long}
           let name = restObject.restaurantName
           coords.push(coordinates);
           restaurantNames.push(name);
@@ -52,15 +55,22 @@ export default class RestaurantList extends Component{
           return null;
         }
       });
+      this.setState({
+        restaurants: restaurants,
+        restaurantNames: restaurantNames,
+        coords: coords
+      })
+  }
 
+  render(){
     return(
       <div className = "container">
         <div className="map-div">
-          <Map coords = {coords} name={restaurantNames}/>
+          <Map coords = {this.state.coords} name={this.state.restaurantNames} googleIsLoaded={this.setData} />
         </div>
         <div className = "restaurantList">
           <Filter minValue = {this.state.minValue} maxValue={this.state.maxValue} minHandler = {this.minHandler} maxHandler = {this.maxHandler} />
-          {restaurants}
+          {this.state.restaurants}
         </div>
       </div>
 

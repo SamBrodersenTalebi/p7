@@ -52,6 +52,7 @@ export default class Map extends Component{
         map: this.map,
       });
 
+      var infowindow = new window.google.maps.InfoWindow({map:this.map});
       //add marker window
       marker.addListener('click',function(){
         //wait for user input
@@ -61,29 +62,36 @@ export default class Map extends Component{
       })
     });
 
+    this.props.googleIsLoaded();
+
   }
 
 
-  addMarker = (coordinates, imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png', name)=>{
-    var marker = new window.google.maps.Marker({
-      position:coordinates,
-      icon:imageURL,
-      map:this.map
-    });
-
-    //Create a infowindow
-    var infowindow = new window.google.maps.InfoWindow({map:this.map});
-
-    //content for infowindow
-    var contentString = `<h2>Restaurant name: ${name}</h2>`
-
-    //Markers listen for a click event which will open InfoWindow
-    marker.addListener('click',function(){
-      //change content
-      infowindow.setContent(contentString)
-      //open infowindow
-      infowindow.open(this.map,marker);
-    })
+  addMarker = (coordinates,name)=>{
+    if(window.google){
+      var marker = new window.google.maps.Marker({
+        position:coordinates,
+        //icon:imageURL,
+        //map:this.map
+      });
+      marker.setMap(this.map);
+  
+      
+      //Create a infowindow
+      var infowindow = new window.google.maps.InfoWindow({map:this.map});
+  
+      //content for infowindow
+      var contentString = `<h2>Restaurant name: ${name}</h2>`
+  
+      //Markers listen for a click event which will open InfoWindow
+      marker.addListener('click',function(){
+        //change content
+        infowindow.setContent(contentString)
+        //open infowindow
+        infowindow.open(this.map,marker);
+      })
+      
+    }
   }
 
   renderMap(){
@@ -94,11 +102,13 @@ export default class Map extends Component{
 
   render(){
     console.log(this.props.coords);
+    
     let names = this.props.name;
     let coordinates = this.props.coords;
     for(let i = 0; i < coordinates.length; i++){
       this.addMarker(coordinates[i],names[i]);
     }
+    
 
 
     return(
@@ -130,3 +140,6 @@ function loadScript(url){
   //select first script tag and select parentNode and insert the script before it
   index.parentNode.insertBefore(script, index);
 }
+
+
+//imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
