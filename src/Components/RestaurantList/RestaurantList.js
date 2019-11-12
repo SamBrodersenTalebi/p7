@@ -90,7 +90,7 @@ export default class RestaurantList extends Component{
     return(
       <div className = "container">
         <div className="map-div">
-          <Map coords = {this.state.coords} name={this.state.restaurantNames} googleIsLoaded={this.setData} />
+          
         </div>
         <div className = "restaurantList">
           <Filter minValue = {this.state.minValue} maxValue={this.state.maxValue} minHandler = {this.minHandler} maxHandler = {this.maxHandler} />

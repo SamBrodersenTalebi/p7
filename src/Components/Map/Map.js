@@ -1,12 +1,6 @@
 //COORDINATES PROPS NEEDS TO UPDATE ACCORDING TO THE FILTER BUT THE METHOD IS ONLY CALLED ONCE RIGHT NOW
-
 import React, { Component } from 'react';
 import './Map.css';
-//geo location api
-
-//let map = 0;
-let lat = 0;
-let long = 0;
 
 export default class Map extends Component{
   constructor(props){
@@ -19,56 +13,11 @@ export default class Map extends Component{
 
 
  componentDidMount(){
-   //get current position.
-    navigator.geolocation.getCurrentPosition((position) =>{
-      lat = parseFloat(position.coords.latitude);
-      long = parseFloat(position.coords.longitude);
-    })
-    this.renderMap();
+;
   }
 
   initMap(){
-
-    //let browser access google by saying window.google
-    this.map = new window.google.maps.Map(document.getElementById('map'),{
-      center: {lat:lat, lng: long},
-      zoom: 8
-    });
-
-    
-    //place_id for Horsens
-    var request = {
-      placeId:"ChIJrWoV7FdgTEYRxvncjZpjPfU"
-    };
-    
-    var service = new window.google.maps.places.PlacesService(this.map);
-    var search = {
-      //bounds: map.getBounds(),
-      type: ['restaurant'],
-      location: {lat:lat, lng: long},
-      radius: 4300
-    };
-
-    service.nearbySearch(search, (results, status)=>{
-      console.log(status);
-      if(status == window.google.maps.places.PlacesServiceStatus.OK){
-        console.log("Success")
-        console.log(results)
-      }else{
-        console.log("Error")
-      }
-    })
 /*
-      //getDetails retrieves all details by a given placeID
-      service.getDetails(request, function(place,status){
-        console.log(status)
-        if(status == window.google.maps.places.PlacesServiceStatus.OK){
-          console.log(place);
-        }
-      })
-      */
-      
-
     //add marker on click
     var map = this.map
     this.map.addListener('click', function (e) {
@@ -88,10 +37,7 @@ export default class Map extends Component{
 
 
     this.props.googleIsLoaded();
-
-  }
-
-  places=()=>{
+    */
 
   }
 
@@ -158,7 +104,7 @@ export default class Map extends Component{
     }
   }
 
-
+/*
   async streetPano(name, coordinates){
     let pano = new window.google.maps.StreetViewPanorama(document.getElementById(name),{
       position: coordinates,
@@ -170,13 +116,8 @@ export default class Map extends Component{
     let panorama = await pano;
     return panorama;
   }
+  */
 
-
-
-  renderMap(){
-    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap&libraries=places");
-    window.initMap = this.initMap;
-  }
 
 
   render(){
@@ -196,24 +137,6 @@ export default class Map extends Component{
 
 }
 
-/*
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
-  async defer></script>
-*/
-
-function loadScript(url){
-  //select the first script tag
-  let index = window.document.getElementsByTagName("script")[0];
-  //create script tag
-  let script = window.document.createElement("script");
-  // give script tag a source attribute
-  script.src = url;
-  // give script tag async and defer
-  script.async = true;
-  script.defer = true;
-  //select first script tag and select parentNode and insert the script before it
-  index.parentNode.insertBefore(script, index);
-}
 
 
 //imageURL='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'

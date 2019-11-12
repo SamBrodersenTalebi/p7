@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import RestaurantList from './Components/RestaurantList/RestaurantList'
 
-
+let lat = 0;
+let long = 0;
 
 class App extends Component{
   constructor(props){
@@ -40,29 +41,64 @@ class App extends Component{
          }
       ]
    }],
-   places:0
+   places:0,
+   map: 0
  };
   }
 
+  UNSAFE_componentWillMount(){
+     //get current position.
+     navigator.geolocation.getCurrentPosition((position) =>{
+      lat = parseFloat(position.coords.latitude);
+      long = parseFloat(position.coords.longitude);
+    })
+  }
   
   componentDidMount(){
-     /*
-   //mode:no-cors --> fetch can not be blocked by CORS
-    fetch("https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+horsens&key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM", {
-      mode:"no-cors"
-   }).then((response)=>{
-      console.log(JSON.stringify(response.json()));
-      //response.json();
-   }).then((data)=>{
-    this.setState({places: data})
-   });
-   */
+      this.renderMap();
   }
+
+  initMap=()=>{
+   //let browser access google by saying window.google
+    let map = new window.google.maps.Map(document.getElementById('map'), {
+      center: {lat:lat, lng: long},
+      zoom: 8
+    });
+
+    this.setState({map:map});
+
+    
+    var service = new window.google.maps.places.PlacesService(map);
+    var search = {
+      bounds: map.getBounds(),
+      type: ['restaurant'],
+      location: {lat:lat, lng: long},
+      radius: 870
+    };
+
+    service.nearbySearch(search, (results, status)=>{
+      console.log(status);
+      if(status === window.google.maps.places.PlacesServiceStatus.OK){
+        console.log("Success")
+        console.log(results)
+        this.setState({places:results})
+      }else{
+        console.log("Error")
+      }
+    })
+  }
+
+  renderMap(){
+   loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap&libraries=places");
+   window.initMap = this.initMap;
+ }
 
 
   render(){
+     console.log(this.state.places)
     return(
       <main>
+          <div id="map"></div>
           <RestaurantList data = {this.state.data} />
       </main>
     );
@@ -71,4 +107,21 @@ class App extends Component{
 
 export default App;
 
-// { mode: 'no-cors'}
+/*
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+  async defer></script>
+*/
+
+function loadScript(url){
+   //select the first script tag
+   let index = window.document.getElementsByTagName("script")[0];
+   //create script tag
+   let script = window.document.createElement("script");
+   // give script tag a source attribute
+   script.src = url;
+   // give script tag async and defer
+   script.async = true;
+   script.defer = true;
+   //select first script tag and select parentNode and insert the script before it
+   index.parentNode.insertBefore(script, index);
+ }
