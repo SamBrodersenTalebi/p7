@@ -23,22 +23,26 @@ export default class RestaurantList extends Component{
     this.setState({
       minValue: event.target.value
     })
-    console.log(this.state.value)
+    this.setRestaurant()
   }
 
   maxHandler(event){
     this.setState({
       maxValue: event.target.value
     })
-    console.log(this.state.value)
+    this.setRestaurant()
+  }
+
+  //use life cycle function to trigger setRestaurant initially 
+  UNSAFE_componentWillMount(){
+    this.setRestaurant();
   }
 
   setData(){
     let restaurantNames = [];
     let coords = [];
-    let i = 0;
-    //pass each restaurant object to the Restaurant Class instance based on the filter
-    let restaurants = this.props.data.map((restObject) =>{
+    //map over data to save coordinates and names of restaurants
+    this.props.data.map((restObject) =>{
       let ratings = restObject.ratings
       let average = 0;
       for(let i = 0; i < ratings.length; i++){
@@ -50,16 +54,35 @@ export default class RestaurantList extends Component{
           let name = restObject.restaurantName
           coords.push(coordinates);
           restaurantNames.push(name);
-          return(<Restaurant restaurant = {restObject} key={i++}/>);
         }else{
           return null;
         }
       });
       this.setState({
         restaurantNames: restaurantNames,
-        coords: coords,
-        restaurants: restaurants
+        coords: coords
       })
+  }
+
+  setRestaurant=()=>{
+    let i = 0;
+    let restaurants = this.props.data.map((object)=>{
+      let ratings = object.ratings;
+      let average = 0;
+      for(let i = 0; i < ratings.length; i++){
+        average += ratings[i].stars;
+        }
+        average /= ratings.length;
+        if(average >= this.state.minValue && average <= this.state.maxValue){
+          return(<Restaurant restaurant = {object} key={i++}/>)
+        }else{
+         return null;
+        }
+    })
+
+    this.setState({
+      restaurants: restaurants
+    })
   }
 
 

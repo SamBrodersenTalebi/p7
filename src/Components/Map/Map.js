@@ -1,3 +1,5 @@
+//COORDINATES PROPS NEEDS TO UPDATE ACCORDING TO THE FILTER BUT THE METHOD IS ONLY CALLED ONCE RIGHT NOW
+
 import React, { Component } from 'react';
 import './Map.css';
 //geo location api
@@ -9,6 +11,9 @@ let long = 0;
 export default class Map extends Component{
   constructor(props){
     super(props);
+    this.state = {
+      marker: ""
+    }
     this.initMap = this.initMap.bind(this);
   }
 
@@ -30,88 +35,151 @@ export default class Map extends Component{
       zoom: 8
     });
 
+    
+    //place_id for Horsens
+    var request = {
+      placeId:"ChIJrWoV7FdgTEYRxvncjZpjPfU"
+    };
+    
+    var service = new window.google.maps.places.PlacesService(this.map);
+    var search = {
+      //bounds: map.getBounds(),
+      type: ['restaurant'],
+      location: {lat:lat, lng: long},
+      radius: 4300
+    };
+
+    service.nearbySearch(search, (results, status)=>{
+      console.log(status);
+      if(status == window.google.maps.places.PlacesServiceStatus.OK){
+        console.log("Success")
+        console.log(results)
+      }else{
+        console.log("Error")
+      }
+    })
+/*
+      //getDetails retrieves all details by a given placeID
+      service.getDetails(request, function(place,status){
+        console.log(status)
+        if(status == window.google.maps.places.PlacesServiceStatus.OK){
+          console.log(place);
+        }
+      })
+      */
+      
 
     //add marker on click
-    window.google.maps.event.addListener(this.map, 'click', function (e) {
+    var map = this.map
+    this.map.addListener('click', function (e) {
       alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
-      var marker = new window.google.maps.Marker({
-        position:{lat:e.latLng.lat(), lng: e.latLng.lng()},
-        map: this.map,
-      });
+      let coordinates = {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng() 
+      };
 
-      var infowindow = new window.google.maps.InfoWindow({map:this.map});
-      //add marker window
-      marker.addListener('click',function(){
-        //wait for user input
-        infowindow.setContent('<input placeholder="Add restaurant name" type="text" class="info-popup" onkeypress ="myFunction()">')
-        //open infoWindow
-        infowindow.open(this.map,marker)
+      var marker = new window.google.maps.Marker({
+        position:coordinates,
+        map:map
       })
+      console.log(marker);
+
     });
+
 
     this.props.googleIsLoaded();
 
   }
-  
+
+  places=()=>{
+
+  }
+
+
 
   addMarker = (coordinates,name)=>{
     if(window.google){
       var marker = new window.google.maps.Marker({
         position:coordinates,
-        //icon:imageURL,
-        //map:this.map
       });
       marker.setMap(this.map);
-      
 
-      // Create the shared infowindow with two DIV placeholders
-      //one for streetview and the other for content string
-      var content = document.createElement("DIV");
-      var streetview = document.createElement("DIV");
-      streetview.setAttribute("id", `${name}`);
-      streetview.style.width = "200px";
-      streetview.style.height = "200px";
-      content.appendChild(streetview);
-      //content for infowindow
-      var contentString = `<h2>Restaurant name: ${name}</h2>`
-      content.appendChild(contentString);
-
-      
-      //Streetview
-      let panorama = new window.google.maps.StreetViewPanorama(
-      document.getElementById(`${name}`),{
-        position: {lat: coordinates[0], lng: coordinates[1]},
-        pov: {
-          heading: 34,
-          pitch: 10
-        }
-      });
-      this.map.setStreetView(panorama);
+      var contentString = `<div><h2>Restaurant name: ${name}</h2><div id=${name} style="width:200px;height:200px;"></div></div>`;
 
       
       //Create a infowindow
-      var infowindow = new window.google.maps.InfoWindow({map:this.map});
-  
-  
-      //Markers listen for a click event which will open InfoWindow
+      var infowindow = new window.google.maps.InfoWindow({map:this.map, content:contentString});
+    /* var pano = this.streetPano(name);
+      this.map.setStreetView(pano);
+
+      */
+
+      //Markers listen for a click event which will open InfoWindow and StreetView
       marker.addListener('click',function(){
-        //change content
-        infowindow.setContent(content)
+        
+        
+        let pano = new window.google.maps.StreetViewPanorama(document.getElementById(name),{
+          position: coordinates,
+           pov: {
+            heading: 34,
+            pitch: 10
+           }
+         });
+
+         this.map.setStreetView(pano);
+        
         //open infowindow
         infowindow.open(this.map,marker);
-      })
+
+      });
+
       
+      //event is fired when the close button is clicked 
+      window.google.maps.event.addListener(infowindow, 'closeclick', function() {
+        
+      });
+
+      //When clicking the marker map will center on the marker
+      var map = this.map
+
+      map.addListener('center_changed', function() {
+        // 3 seconds after the center of the map has changed, pan back to the
+        // marker.
+        window.setTimeout(function() {
+          map.panTo(marker.getPosition());
+        }, 3000);
+      });
+    
+        marker.addListener('click', function() {
+        map.setZoom(8);
+        map.setCenter(marker.getPosition());
+      });
+
     }
   }
 
+
+  async streetPano(name, coordinates){
+    let pano = new window.google.maps.StreetViewPanorama(document.getElementById(name),{
+      position: coordinates,
+      pov: {
+        heading: 34,
+        pitch: 10
+      }
+    });
+    let panorama = await pano;
+    return panorama;
+  }
+
+
+
   renderMap(){
-    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap");
+    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap&libraries=places");
     window.initMap = this.initMap;
   }
 
 
   render(){
-    console.log(this.props.coords);
     
     let names = this.props.name;
     let coordinates = this.props.coords;
@@ -122,11 +190,8 @@ export default class Map extends Component{
 
 
     return(
-      <div className="map-container">
-        <div id="map"> </div>
-      </div>
-
-    )
+      <div id="map"> </div>
+    );
   }
 
 }
