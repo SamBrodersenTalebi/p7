@@ -66,35 +66,6 @@ class App extends Component{
     });
 
     this.setState({map:map});
-
-    
-    var service = new window.google.maps.places.PlacesService(map);
-    var search = {
-      type: ['restaurant'],
-      location: {lat:lat, lng: long},
-      radius: 870
-    };
-
-    
-
-    service.nearbySearch(search, (results, status)=>{
-      console.log(status);
-      if(status === window.google.maps.places.PlacesServiceStatus.OK){
-        
-      }else{
-        console.log("Error")
-      }
-    })
-
-    //this.state.places.map()
-    //map over results call getDetails on each result place inside of nearbysearch
-    service.getDetails({
-      placeId:'ChIJd-vML6FjTEYRRgh4AYTBXxo'
-    }, function(detail,status){
-      if(status === window.google.maps.places.PlacesServiceStatus.OK){
-      }
-    })
-
     
     //add marker on click
     map.addListener('click', function (e) {
@@ -111,12 +82,48 @@ class App extends Component{
 
     });
 
+    this.placeService();
+
     //when the map is done being created
     let ref = this.refs.restaurantList;
     window.google.maps.event.addListenerOnce(map, 'idle', function(){ ref.callRef() });
     
-
   }
+
+  placeService=()=>{
+    if(window.google){
+
+      let map = this.state.map;
+      var service = new window.google.maps.places.PlacesService(map);
+      var search = {
+        type: ['restaurant'],
+        location: {lat:lat, lng: long},
+        radius: 870
+      };
+  
+      service.nearbySearch(search, (results, status)=>{
+        console.log(status);
+        if(status === window.google.maps.places.PlacesServiceStatus.OK){ 
+          console.log(results)
+          let place = [];
+          results.map((object)=>{
+            //map over results call getDetails on each result place inside of nearbysearch
+           service.getDetails({
+              placeId:object.place_id
+            }, function(detail,status){
+              if(status === window.google.maps.places.PlacesServiceStatus.OK){
+                place.push(detail);
+              }
+            })
+          })
+          this.setState({places:place});  
+        }else{
+          console.log("Error")
+        }
+      })
+    }
+  }
+  
 
 
 
@@ -127,6 +134,7 @@ class App extends Component{
 
 
   render(){
+    console.log(this.state.places)
     return(
       <main className="container">
           <div id="map"></div>
