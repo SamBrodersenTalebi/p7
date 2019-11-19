@@ -1,45 +1,14 @@
 //COORDINATES PROPS NEEDS TO UPDATE ACCORDING TO THE FILTER BUT THE METHOD IS ONLY CALLED ONCE RIGHT NOW
+
 import React, { Component } from 'react';
 import './Map.css';
 
+
 export default class Map extends Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      marker: ""
-    }
-    this.initMap = this.initMap.bind(this);
-  }
 
 
- componentDidMount(){
-;
-  }
-
-  initMap(){
-/*
-    //add marker on click
-    var map = this.map
-    this.map.addListener('click', function (e) {
-      alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
-      let coordinates = {
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng() 
-      };
-
-      var marker = new window.google.maps.Marker({
-        position:coordinates,
-        map:map
-      })
-      console.log(marker);
-
-    });
 
 
-    this.props.googleIsLoaded();
-    */
-
-  }
 
 
 
@@ -88,18 +57,7 @@ export default class Map extends Component{
       //When clicking the marker map will center on the marker
       var map = this.map
 
-      map.addListener('center_changed', function() {
-        // 3 seconds after the center of the map has changed, pan back to the
-        // marker.
-        window.setTimeout(function() {
-          map.panTo(marker.getPosition());
-        }, 3000);
-      });
-    
-        marker.addListener('click', function() {
-        map.setZoom(8);
-        map.setCenter(marker.getPosition());
-      });
+   
 
     }
   }

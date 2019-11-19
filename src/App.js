@@ -70,23 +70,55 @@ class App extends Component{
     
     var service = new window.google.maps.places.PlacesService(map);
     var search = {
-      bounds: map.getBounds(),
       type: ['restaurant'],
       location: {lat:lat, lng: long},
       radius: 870
     };
 
+    
+
     service.nearbySearch(search, (results, status)=>{
       console.log(status);
       if(status === window.google.maps.places.PlacesServiceStatus.OK){
-        console.log("Success")
-        console.log(results)
-        this.setState({places:results})
+        
       }else{
         console.log("Error")
       }
     })
+
+    //this.state.places.map()
+    //map over results call getDetails on each result place inside of nearbysearch
+    service.getDetails({
+      placeId:'ChIJd-vML6FjTEYRRgh4AYTBXxo'
+    }, function(detail,status){
+      if(status === window.google.maps.places.PlacesServiceStatus.OK){
+      }
+    })
+
+    
+    //add marker on click
+    map.addListener('click', function (e) {
+      alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
+      let coordinates = {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng() 
+      };
+
+      new window.google.maps.Marker({
+        position:coordinates,
+        map:map
+      })
+
+    });
+
+    //when the map is done being created
+    let ref = this.refs.restaurantList;
+    window.google.maps.event.addListenerOnce(map, 'idle', function(){ ref.callRef() });
+    
+
   }
+
+
 
   renderMap(){
    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap&libraries=places");
@@ -95,11 +127,10 @@ class App extends Component{
 
 
   render(){
-     console.log(this.state.places)
     return(
-      <main>
+      <main className="container">
           <div id="map"></div>
-          <RestaurantList data = {this.state.data} />
+          <RestaurantList data = {this.state.data} places={this.state.places} map = {this.state.map} ref="restaurantList"/>
       </main>
     );
   }
