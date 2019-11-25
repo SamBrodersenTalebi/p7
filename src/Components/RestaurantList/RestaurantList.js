@@ -45,22 +45,35 @@ export default class RestaurantList extends Component{
     let gmarkers = [];
     let i = 0;
     let restaurants = this.props.data.map((object)=>{
-      let ratings = object.ratings;
-      let average = 0;
-      for(let i = 0; i < ratings.length; i++){
-        average += ratings[i].stars;
-        }
-        average /= ratings.length;
-        if(average >= minValue && average <= maxValue){
-          let coordinates = {"lat": object.lat, "lng": object.long};
-          let name = object.restaurantName;
-          coords.push(coordinates);
-          restaurantNames.push(name);
-          return(<Restaurant restaurant = {object} key={i++}/>)
-        }else{
-         return null;
-        }
+      //get average rating
+     let rating = object.rating
+      //if average rating is within filter then display restaurant
+      if(rating >= minValue && rating <= maxValue ){
+        let coordinates = {"lat": object.lat, "lng": object.long};
+        let name = object.restaurantName;
+        coords.push(coordinates);
+        restaurantNames.push(name);
+        return(<Restaurant restaurant = {object} key={i++}/>)
+      } else{
+        return null;
+      }
     })
+
+    /*let places = this.props.places.map((object)=>{
+      //get average rating 
+      let rating = object.rating;
+      if(rating >= minValue && rating <= maxValue ){
+        let coordinates = {"lat": object.geometry.location.lat(), "lng": object.geometry.location.lng()};
+        let name = object.name;
+        coords.push(coordinates);
+        restaurantNames.push(name);
+        return(<Restaurant restaurant = {object} key={i++}/>)
+      }else{
+        return null;
+      }
+    })
+    */
+
 
     
      for(let i = 0; i < coords.length; i++){
@@ -69,6 +82,7 @@ export default class RestaurantList extends Component{
      }
 
      this.setState({
+      //places:places,
       restaurants: restaurants,
       names: restaurantNames,
       coordinates: coords,
@@ -147,4 +161,3 @@ export default class RestaurantList extends Component{
   }
 }
 
-// I need to update which restaurants are being displayed based on the filter but currently the state of restaurants are set once once the map is rendered

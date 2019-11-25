@@ -14,32 +14,38 @@ class App extends Component{
       "address":"39 Rue des Petites Écuries, 75010 Paris",
       "lat":55.862350,
       "long":9.852370,
-      "ratings":[
-         {
-            "stars":4,
-            "comment":"Great! But not many veggie options."
-         },
-         {
-            "stars":5,
-            "comment":"My favorite restaurant!"
-         }
-      ]
+      "reviews":[
+        {
+          "author_name":"Morten Olesen",
+          "rating":4,
+          "comment":"Great! But not many veggie options."
+        },
+        {
+          "author_name":"Pia Kjær",
+          "rating":5,
+          "comment":"My favorite restaurant!"
+        }
+      ],
+      "rating":4.5
    },
    {
       "restaurantName":"Babalou",
       "address":"4 Rue Lamarck, 75018 Paris",
       "lat":55.855798,
       "long":9.846777,
-      "ratings":[
-         {
-            "stars":2,
-            "comment":"Tiny pizzeria next to Sacre Coeur!"
-         },
-         {
-            "stars":3,
-            "comment":"Meh, it was fine."
-         }
-      ]
+      "reviews":[
+        {
+          "author_name":"Louise Poulsen",
+          "rating":2,
+          "comment":"Tiny pizzeria next to Sacre Coeur!"
+        },
+        {
+          "author_name":"Al Ulsted",
+          "rating":3,
+          "comment":"Meh, it was fine."
+        }
+      ],
+      "rating":2.5
    }],
    places:0,
    map: 0
@@ -65,6 +71,8 @@ class App extends Component{
       zoom: 8
     });
 
+  
+
     this.setState({map:map});
     
     //add marker on click
@@ -82,17 +90,20 @@ class App extends Component{
 
     });
 
-    this.placeService();
 
     //when the map is done being created
     let ref = this.refs.restaurantList;
-    window.google.maps.event.addListenerOnce(map, 'idle', function(){ ref.callRef() });
+    let service = this.placeService
+    
+    window.google.maps.event.addListenerOnce(map, 'idle', function(){ 
+      ref.callRef();
+      service();
+    });
     
   }
 
   placeService=()=>{
     if(window.google){
-
       let map = this.state.map;
       var service = new window.google.maps.places.PlacesService(map);
       var search = {
@@ -102,7 +113,6 @@ class App extends Component{
       };
   
       service.nearbySearch(search, (results, status)=>{
-        console.log(status);
         if(status === window.google.maps.places.PlacesServiceStatus.OK){ 
           console.log(results)
           let place = [];
@@ -121,8 +131,10 @@ class App extends Component{
           console.log("Error")
         }
       })
+
     }
   }
+  
   
 
 
@@ -134,7 +146,7 @@ class App extends Component{
 
 
   render(){
-    console.log(this.state.places)
+    console.log(this.state.places);
     return(
       <main className="container">
           <div id="map"></div>
