@@ -72,7 +72,6 @@ class App extends Component{
     });
 
   
-
     this.setState({map:map});
     
     //add marker on click
@@ -82,6 +81,13 @@ class App extends Component{
         lat: e.latLng.lat(),
         lng: e.latLng.lng() 
       };
+      //create a form inside of here 
+      //press submit add restaurant to list and remove form
+      //pop up in the middle of the screen
+      //get state and add restaurant to state
+      let form = <form></form>;
+      
+      
 
       new window.google.maps.Marker({
         position:coordinates,
@@ -93,7 +99,7 @@ class App extends Component{
 
     //when the map is done being created
     let ref = this.refs.restaurantList;
-    let service = this.placeService
+    let service = this.placeService;
     
     window.google.maps.event.addListenerOnce(map, 'idle', function(){ 
       ref.callRef();
@@ -103,18 +109,21 @@ class App extends Component{
   }
 
   placeService=()=>{
-    if(window.google){
+    if(window.google.maps){
       let map = this.state.map;
       var service = new window.google.maps.places.PlacesService(map);
+      
       var search = {
         type: ['restaurant'],
         location: {lat:lat, lng: long},
         radius: 870
       };
+
+      console.log(search.location);
   
       service.nearbySearch(search, (results, status)=>{
         if(status === window.google.maps.places.PlacesServiceStatus.OK){ 
-          console.log(results)
+          console.log(results);
           let place = [];
           results.map((object)=>{
             //map over results call getDetails on each result place inside of nearbysearch
@@ -128,7 +137,14 @@ class App extends Component{
           })
           this.setState({places:place});  
         }else{
-          console.log("Error")
+          console.log("Error");
+          console.log(status);
+          console.log(this.state.map);
+         /* if(status === "ZERO_RESULTS"){
+            this.placeService();
+          }
+          */
+          //this.placeService();
         }
       })
 

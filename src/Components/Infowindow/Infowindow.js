@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+/*import React, { Component } from 'react';
 
 export default class InfoWindow extends Component{
     render(){
@@ -14,3 +14,4 @@ export default class InfoWindow extends Component{
         )
     }
 }
+*/

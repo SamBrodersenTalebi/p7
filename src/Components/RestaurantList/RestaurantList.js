@@ -117,15 +117,18 @@ export default class RestaurantList extends Component{
 
       let pano = new window.google.maps.StreetViewPanorama(document.getElementById(name),{
         position: coordinates
-       });
+      });
        
       //set panorama on map
-    map.setStreetView(pano);
+      map.setStreetView(pano);
+    
 
-     marker.addListener('click',function(){
+      marker.addListener('click',function(){
         
         //open infowindow
-        infowindow.open(pano,marker);
+        infowindow.open(map,marker);
+
+
 
       });
 
