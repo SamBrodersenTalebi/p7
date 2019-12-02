@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './RestaurantList.css';
 import Restaurant from '../Restaurant/Restaurant';
 import Filter from '../Filter/Filter';
-import Map from '../Map/Map';
 
 export default class RestaurantList extends Component{
   constructor(props){
@@ -13,11 +12,23 @@ export default class RestaurantList extends Component{
       restaurants:"",
       coordinates:0,
       names:0,
-      marker:0
+      marker:0,
+      placesRestaurant:""
     }
     this.minHandler = this.minHandler.bind(this);
     this.maxHandler = this.maxHandler.bind(this);
   }
+
+  UNSAFE_componentWillReceiveProps(nextProps){
+    if(nextProps.places !== this.props.places){
+      alert("places are here!!")
+      //run a new method to map over places!
+      console.log(this.props.places);
+   }
+   else return null;
+ }
+
+  
 
   //setRestaurant as a callback in the setState.
   minHandler(event){
@@ -38,6 +49,7 @@ export default class RestaurantList extends Component{
   }
 
 
+
   setRestaurant=(maxValue, minValue)=>{
     this.removeMarkers(this.state.marker);
     let coords = [];
@@ -50,30 +62,35 @@ export default class RestaurantList extends Component{
       //if average rating is within filter then display restaurant
       if(rating >= minValue && rating <= maxValue ){
         let coordinates = {"lat": object.lat, "lng": object.long};
-        let name = object.restaurantName;
+        let name = object.name;
         coords.push(coordinates);
         restaurantNames.push(name);
         return(<Restaurant restaurant = {object} key={i++}/>)
       } else{
         return null;
       }
-    })
-
-    /*let places = this.props.places.map((object)=>{
-      //get average rating 
-      let rating = object.rating;
-      if(rating >= minValue && rating <= maxValue ){
-        let coordinates = {"lat": object.geometry.location.lat(), "lng": object.geometry.location.lng()};
-        let name = object.name;
-        coords.push(coordinates);
-        restaurantNames.push(name);
-        return(<Restaurant restaurant = {object} key={i++}/>)
-      }else{
-        return null;
-      }
-    })
-    */
-
+    });
+    
+    let places = 0;
+    if(this.props.places === 0){
+      console.log(this.props.places)
+    }else{
+      console.log(this.props.places);
+     places = this.props.places.map((object)=>{
+        //get average rating 
+        let rating = object.rating;
+        if(rating >= minValue && rating <= maxValue ){
+          let coordinates = {"lat": object.geometry.location.lat(), "lng": object.geometry.location.lng()};
+          let name = object.name;
+          coords.push(coordinates);
+          restaurantNames.push(name);
+          return(<Restaurant restaurant = {object} key={i++}/>)
+        }else{
+          return null;
+          }
+        });
+    }
+ 
 
     
      for(let i = 0; i < coords.length; i++){
@@ -82,7 +99,7 @@ export default class RestaurantList extends Component{
      }
 
      this.setState({
-      //places:places,
+      placesRestaurant:places,
       restaurants: restaurants,
       names: restaurantNames,
       coordinates: coords,
@@ -132,32 +149,19 @@ export default class RestaurantList extends Component{
 
       });
 
-      /*
-      map.addListener('center_changed', function() {
-        // 3 seconds after the center of the map has changed, pan back to the
-        // marker.
-        window.setTimeout(function() {
-          map.panTo(marker.getPosition());
-        }, 3000);
-      });
-    
-        marker.addListener('click', function() {
-        map.setZoom(8);
-        map.setCenter(marker.getPosition());
-      });
-      */
-
       return marker;
     }
  }
 
 
   render(){
-     
     return(
         <div className = "restaurantList">
           <Filter minValue = {this.state.minValue} maxValue={this.state.maxValue} minHandler = {this.minHandler} maxHandler = {this.maxHandler} />
-          {this.state.restaurants}
+          <div className="flex-container">
+            {this.state.restaurants}
+            {this.state.placesRestaurant}
+          </div>
         </div>
 
     );

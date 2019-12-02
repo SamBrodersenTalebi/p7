@@ -52,21 +52,21 @@ export default class Restaurant extends Component{
     let i = 0;
     let review = this.state.review.map((rating)=>{
       return(
-        <Review stars = {rating.rating} comment = {rating.comment} author={rating.author_name} key={i++} />
+        <Review stars = {rating.rating} comment = {rating.text} author={rating.author_name} key={i++} />
       );
     })
     return(
       <div className="restaurant">
         <h3 className="name">
-          {this.props.restaurant.restaurantName}
+          {this.props.restaurant.name}
         </h3>
         <p className="address">
-          <span className="fat">Restaurant Address: </span>{this.props.restaurant.address}
+          <span className="fat">Restaurant Address: </span> <br/>{this.props.restaurant.vicinity}
         </p>
         <div className="wrapper">
           <button className="review-header button" onClick={this.handleClick}>View reviews</button>
         </div>
-        <div className="review">
+        <div className="review-toggle">
            {
              this.state.showReview?
               review

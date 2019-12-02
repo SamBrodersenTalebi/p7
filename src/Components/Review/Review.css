@@ -4,5 +4,9 @@
 }
 
 .review{
-  border: 1px solid black;
+  width:100%;
+}
+
+.review p{
+  text-align: center;
 }

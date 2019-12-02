@@ -1,13 +1,7 @@
 
-.container{
+
+.flex-container{
   display:flex;
-  width:100%
-}
-
-#map{
-  width:70%
-}
-
-.restaurantList{
-  width: 30%
+  justify-content: center;
+  flex-wrap:wrap;
 }
