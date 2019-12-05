@@ -3,6 +3,8 @@ import './RestaurantList.css';
 import Restaurant from '../Restaurant/Restaurant';
 import Filter from '../Filter/Filter';
 
+let clickedMarker = null;
+
 export default class RestaurantList extends Component{
   constructor(props){
     super(props);
@@ -13,20 +15,13 @@ export default class RestaurantList extends Component{
       coordinates:0,
       names:0,
       marker:0,
-      placesRestaurant:""
+      placesRestaurant:"",
+      googleMarkers: []
     }
+    //have infowindow and pano in state
     this.minHandler = this.minHandler.bind(this);
     this.maxHandler = this.maxHandler.bind(this);
   }
-
-  UNSAFE_componentWillReceiveProps(nextProps){
-    if(nextProps.places !== this.props.places){
-      alert("places are here!!")
-      //run a new method to map over places!
-      console.log(this.props.places);
-   }
-   else return null;
- }
 
   
 
@@ -44,8 +39,8 @@ export default class RestaurantList extends Component{
   }
 
   //call this method within the parent class (App.js)  
-  callRef(){
-    this.setRestaurant(this.state.maxValue, this.state.minValue)
+  callRef(place){
+    this.setRestaurant(this.state.maxValue, this.state.minValue);
   }
 
 
@@ -73,10 +68,8 @@ export default class RestaurantList extends Component{
     
     let places = 0;
     if(this.props.places === 0){
-      console.log(this.props.places)
     }else{
-      console.log(this.props.places);
-     places = this.props.places.map((object)=>{
+      places = this.props.places.map((object)=>{
         //get average rating 
         let rating = object.rating;
         if(rating >= minValue && rating <= maxValue ){
@@ -117,41 +110,68 @@ export default class RestaurantList extends Component{
     if(window.google){
      let map = this.props.map
 
+     //create marker
      var marker = new window.google.maps.Marker({
         position:coordinates,
+        title:name
       });
 
       //set marker on map
       marker.setMap(map);
 
-      //content for infowindow
-      var contentString = `<div><h2>Restaurant name: ${name}</h2><div id=${name} style="width:200px;height:200px;"></div></div>`;
-
-      //Create a infowindow
-     var infowindow = new window.google.maps.InfoWindow({map:map, content:contentString});
-      
-      //Panorama
-
-      let pano = new window.google.maps.StreetViewPanorama(document.getElementById(name),{
-        position: coordinates
-      });
-       
-      //set panorama on map
-      map.setStreetView(pano);
-    
-
-      marker.addListener('click',function(){
-        
-        //open infowindow
-        infowindow.open(map,marker);
-
-
-
+      let pano = this.props.sv;
+      let processSVData = this.processSVData;
+      //listen for click on marker 
+      //processSVData is a callback will be called once getPanoramaByLocation is finished
+      window.google.maps.event.addListener(marker, "click", function(){
+        clickedMarker = marker;
+        pano.getPanoramaByLocation(marker.getPosition(), 50, processSVData);
       });
 
-      return marker;
+      //save marker in state:
+      let thisMarker = this.state.googleMarkers.push(marker);
+
+      this.setState({
+        googleMarkers: thisMarker
+      })
+
     }
  }
+
+
+ processSVData=(data, status)=>{
+  if (status === window.google.maps.StreetViewStatus.OK){
+    let marker = clickedMarker;
+    let pano = this.props.panorama;
+    //if the marker is not null 
+    if (!!pano  && !!pano.setPano) {
+    //pass clicked marker into openInfoWindow method
+    this.openInfoWindow(marker);
+    //grabbing the pano with the matching id and setting it 
+    pano.setPano(data.location.pano);
+    pano.setPov({
+      heading: 270,
+      pitch: 0,
+      zoom: 1
+    });
+    //make pano visible
+    pano.setVisible(true);
+    }else {
+      console.error('Street View data not found for this location.');
+    }
+  }
+ }
+ 
+
+openInfoWindow(marker) {
+  let infowindow = this.props.infowindow;
+  console.log(infowindow)
+  //Get the title and update the text content 
+  var title = this.props.infowindowTitle
+  title.textContent = marker.getTitle();
+  //open infowindow once title is updated
+  infowindow.open(this.props.map, marker);
+}
 
 
   render(){

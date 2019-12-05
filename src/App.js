@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import RestaurantList from './Components/RestaurantList/RestaurantList'
-
+//ZOOM IN ON MAP 
+//Rerender map when I move it 
+//GOOGLE MAP EVENT LISTENERS ZOOM and DRAG. 
 /*let lat = 0;
 let long = 0;
 */
@@ -48,7 +50,9 @@ class App extends Component{
       "rating":2.5
    }],
    map: 0,
-   places:0
+   places:0,
+   sv: 0,
+   infowindow:0
  };
   }
 
@@ -70,11 +74,16 @@ class App extends Component{
    //let browser access google by saying window.google
     let map = new window.google.maps.Map(document.getElementById('map'), {
       center: {lat:55.868460, lng: 9.862800},
-      zoom: 8
+      zoom: 13
     });
 
-    this.setState({map:map});
+    this.setState({
+      map:map
+    });
     
+    //access formsubmit
+    let handleSubmit = this.handleSubmit;
+
     //add marker on click
     map.addListener('click', function (e) {
       alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
@@ -82,10 +91,20 @@ class App extends Component{
         lat: e.latLng.lat(),
         lng: e.latLng.lng() 
       };
-      let form = `<form style="width:200px;height:200px;">
-      <label class="info-name">Name:</label><br><input type="text" placeholder="Enter Name"></input> 
-      <br><label class="info-name">Address:</label><br><input type="text" placeholder="Address"></input>
-      <input type="submit" value="Submit" onclick="this.formSubmit()"></form>`;
+      
+      let form = `
+      <form >
+      <label htmlFor="username">Enter username</label>
+      <input id="username" name="username" type="text" />
+      <br>
+
+
+      <label htmlFor="birthdate">Enter your birth date</label>
+      <input id="birthdate" name="birthdate" type="text" />
+      <br>
+      <button>Send data!</button>
+      </form>
+      `;
       //create a form inside of here 
       //press submit add restaurant to list and remove form
       //pop up in the middle of the screen
@@ -109,19 +128,63 @@ class App extends Component{
 
 
     //when the map is done being created
-    let ref = this.refs.restaurantList;
-    
+    //let ref = this.refs.restaurantList;
+    let info = this.initInfowindow;
     let service = this.placeService;
     window.google.maps.event.addListenerOnce(map, 'idle', function(){ 
       service();
-      ref.callRef();
+      info();
     });
     
   }
 
+  initInfowindow=()=>{
+    if(window.google){
+    //create streetview
+     var sv = new window.google.maps.StreetViewService()
+        
+      // Create the shared infowindow with two DIV placeholders
+      var content = document.createElement("DIV");
+      var title = document.createElement("DIV");
+      title.setAttribute('id', "infowindow-title");
+      content.appendChild(title);
+      var streetview = document.createElement("DIV");
+      streetview.setAttribute('class', "streetview");
+      streetview.style.width = "200px";
+      streetview.style.height = "200px";
+      content.appendChild(streetview);
+      
+      var infowindow = new window.google.maps.InfoWindow(
+        { 
+          size: new window.google.maps.Size(150,50),
+          content: content
+        });
+
+        let panorama = new window.google.maps.StreetViewPanorama(streetview, {
+          navigationControl: false,
+          enableCloseButton: false,
+          addressControl: false,
+          linksControl: false,
+          visible: true
+         });
+         //panorama.bindTo("position");
+          
+      this.setState({
+       sv: sv,
+       infowindow:infowindow,
+       panorama: panorama,
+       infowindowTitle:title
+      });
+    }
+  }
+
   //NEED TO ACCESS THE LAT AND LONG FROM THE ADDED MARKER.
-  formSubmit=()=>{
-    let data = this.state.data;
+  handleSubmit=(event)=>{
+    event.preventDefault();
+    const data = new FormData(event.target);
+    console.log(data)
+    console.log("vov")
+    /*let data = this.state.data;
     //extract name 
     let name; 
     //extract address
@@ -141,11 +204,13 @@ class App extends Component{
     this.setState({
       data:data
     })
+    */
   }
 
   placeService=()=>{
     if(window.google){
       let map = this.state.map;
+      //use placeService to retrieve restaurants.
       var service = new window.google.maps.places.PlacesService(map);
 
       
@@ -159,8 +224,9 @@ class App extends Component{
   
       service.nearbySearch(search, (results, status)=>{
         if(status === window.google.maps.places.PlacesServiceStatus.OK){ 
-          console.log(results);
           let place = [];
+          let update = this.updatePlace
+          //map over results and call getdetails
           results.map((object)=>{
             //map over results call getDetails on each result place inside of nearbysearch
            service.getDetails({
@@ -168,10 +234,13 @@ class App extends Component{
             }, function(detail,status){
               if(status === window.google.maps.places.PlacesServiceStatus.OK){
                 place.push(detail);
+                if(place.length === 5){
+                  update(place);
+                }
               }
             })
-          })
-          this.setState({places:place});  
+          });
+        
         }else{
           console.log("Error");
           console.log(status);
@@ -179,6 +248,13 @@ class App extends Component{
       })
 
     }
+  }
+
+  updatePlace=(place)=>{
+    let ref = this.refs.restaurantList;
+    this.setState({places:place},()=>{
+      ref.callRef(place)
+    }); 
   }
 
  
@@ -197,7 +273,7 @@ class App extends Component{
     return(
       <main>
           <h1 className="title">Restaurant Review Site</h1>
-          <RestaurantList data = {this.state.data} places={this.state.places} map = {this.state.map} ref="restaurantList"/>
+          <RestaurantList data = {this.state.data} places={this.state.places} map = {this.state.map} infowindow={this.state.infowindow} sv={this.state.sv} infowindowTitle={this.state.infowindowTitle} panorama = {this.state.panorama} ref="restaurantList"/>
           <div id="map"></div>
       </main>
     );
