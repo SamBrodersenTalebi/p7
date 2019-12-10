@@ -10,64 +10,42 @@ let long = 0;
 class App extends Component{
   constructor(props){
     super(props);
+    //make static data into JSON file. 
     this.state = {
-      data: [   {
-      "name":"Bronco",
-      "vicinity":"39 Rue des Petites Écuries, 75010 Paris",
-      "lat":55.862350,
-      "long":9.852370,
-      "reviews":[
-        {
-          "author_name":"Morten Olesen",
-          "rating":4,
-          "text":"Great! But not many veggie options."
-        },
-        {
-          "author_name":"Pia Kjær",
-          "rating":5,
-          "text":"My favorite restaurant!"
-        }
-      ],
-      "rating":4.5
-   },
-   {
-      "name":"Babalou",
-      "vicinity":"4 Rue Lamarck, 75018 Paris",
-      "lat":55.855798,
-      "long":9.846777,
-      "reviews":[
-        {
-          "author_name":"Louise Poulsen",
-          "rating":2,
-          "text":"Tiny pizzeria next to Sacre Coeur!"
-        },
-        {
-          "author_name":"Al Ulsted",
-          "rating":3,
-          "text":"Meh, it was fine."
-        }
-      ],
-      "rating":2.5
-   }],
+   data:[],
    map: 0,
    places:0,
    sv: 0,
-   infowindow:0
- };
-  }
+   infowindow:0,
+   displayErrors: false,
+   coordinates:0
+  };
 
-  UNSAFE_componentWillMount(){
-     //get current position.
-     /*
-     navigator.geolocation.getCurrentPosition((position) =>{
-      lat = parseFloat(position.coords.latitude);
-      long = parseFloat(position.coords.longitude);
-    })
-    */
-  }
+ }
   
   componentDidMount(){
+      this.fetchLocalPlaces();
       this.renderMap();
+  }
+
+  fetchLocalPlaces=()=>{
+    const endpoint = "data/restaurant.json";
+
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    };
+    fetch(endpoint,{
+      method:'get',
+      headers: headers
+    })
+    .then(res=> res.json())
+    .then(data=>{
+      this.setState({
+        data:data
+      });
+    })
+    .catch(err => console.error(err));
   }
 
   initMap=()=>{
@@ -81,50 +59,42 @@ class App extends Component{
       map:map
     });
     
-    //access formsubmit
-    let handleSubmit = this.handleSubmit;
-
+    //Turn form into own component 
+    //pass a function reference 
+    //update state from child component 
+    //call a function to give data to parent
     //add marker on click
-    map.addListener('click', function (e) {
-      alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
+    map.addListener('click',(e)=> {
+      console.log("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
       let coordinates = {
         lat: e.latLng.lat(),
         lng: e.latLng.lng() 
       };
       
-      let form = `
-      <form >
-      <label htmlFor="username">Enter username</label>
-      <input id="username" name="username" type="text" />
-      <br>
-
-
-      <label htmlFor="birthdate">Enter your birth date</label>
-      <input id="birthdate" name="birthdate" type="text" />
-      <br>
-      <button>Send data!</button>
-      </form>
-      `;
-      //create a form inside of here 
-      //press submit add restaurant to list and remove form
-      //pop up in the middle of the screen
-      //get state and add restaurant to state
-      //Create a infowindow
-      var infowindow = new window.google.maps.InfoWindow({map:map, content:form});
 
       let marker = new window.google.maps.Marker({
         position:coordinates,
         map:map
       })
 
-      marker.addListener('click',function(){
-        
-        //open infowindow
-        infowindow.open(map,marker);
-
-      });
+      this.setState({
+        coordinates:coordinates
+      })
 
     });
+
+    //called after the map is done being dragged
+    window.google.maps.event.addListener(map, 'dragend', function() { 
+      alert('map dragged'); 
+    } );
+
+    //maps bounds
+    //called when zooming in and out on map
+    window.google.maps.event.addDomListener(map, 'zoom_changed', function(){
+      alert('zoom change')
+    })
+
+
 
 
     //when the map is done being created
@@ -180,31 +150,50 @@ class App extends Component{
 
   //NEED TO ACCESS THE LAT AND LONG FROM THE ADDED MARKER.
   handleSubmit=(event)=>{
+    console.log("I am entering the form")
+    const form = event.target;
+    //will not rerender browser
     event.preventDefault();
-    const data = new FormData(event.target);
-    console.log(data)
-    console.log("vov")
-    /*let data = this.state.data;
-    //extract name 
-    let name; 
-    //extract address
-    let address;
-    //save this data to object:
-    let object = {
-      "restaurantName":name,
-      "address":address,
-      "lat":55.862350,
-      "long":9.852370,
-      "reviews":[
-      ],
-      "rating":0
-    };
-    //push object to data and update the state
-    data.push(object);
-    this.setState({
-      data:data
-    })
+    /*const formData = new FormData(event.target);
+    console.log(formData)
     */
+
+   //checks if the form is valid
+   if (!event.target.checkValidity()) {
+    // form is invalid! so we do nothing
+    //make border of input red!
+    this.setState({ displayErrors: true });
+    return;
+    }else{
+
+      let data = this.state.data;
+      //extract name 
+      let name = form.elements.name; 
+      //extract address
+      let address= form.elements.address;
+
+      //extract coordinates
+      let coordinates = form.elements.coordinates.value;
+
+      //save in an object
+      let object = {
+        "name":name,
+        "address":address,
+        "lat":coordinates.lat,
+        "long":coordinates.lng,
+        "reviews":[
+       ],
+      "rating":0
+     };
+     //push object to data and update the state
+      data.push(object);
+      this.setState({
+       data:data,
+       displayErrors: false
+      })
+    }
+  
+    
   }
 
   placeService=()=>{
@@ -275,6 +264,7 @@ class App extends Component{
           <h1 className="title">Restaurant Review Site</h1>
           <RestaurantList data = {this.state.data} places={this.state.places} map = {this.state.map} infowindow={this.state.infowindow} sv={this.state.sv} infowindowTitle={this.state.infowindowTitle} panorama = {this.state.panorama} ref="restaurantList"/>
           <div id="map"></div>
+         
       </main>
     );
   }

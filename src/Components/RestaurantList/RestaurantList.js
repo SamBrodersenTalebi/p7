@@ -18,6 +18,7 @@ export default class RestaurantList extends Component{
       placesRestaurant:"",
       googleMarkers: []
     }
+    this.gmarkers = [];
     //have infowindow and pano in state
     this.minHandler = this.minHandler.bind(this);
     this.maxHandler = this.maxHandler.bind(this);
@@ -46,16 +47,16 @@ export default class RestaurantList extends Component{
 
 
   setRestaurant=(maxValue, minValue)=>{
-    this.removeMarkers(this.state.marker);
+    //BUG BUG BUG BUG BUG !!!!
+    this.removeMarkers(this.gmarkers);
     let coords = [];
     let restaurantNames = [];
-    let gmarkers = [];
     let i = 0;
     let restaurants = this.props.data.map((object)=>{
       //get average rating
      let rating = object.rating
       //if average rating is within filter then display restaurant
-      if(rating >= minValue && rating <= maxValue ){
+      if(rating >= minValue && rating <= maxValue){
         let coordinates = {"lat": object.lat, "lng": object.long};
         let name = object.name;
         coords.push(coordinates);
@@ -87,16 +88,15 @@ export default class RestaurantList extends Component{
 
     
      for(let i = 0; i < coords.length; i++){
-       let marker = this.addMarker(coords[i],restaurantNames[i]);
-       gmarkers.push(marker)
+       this.addMarker(coords[i],restaurantNames[i]);
      }
+
 
      this.setState({
       placesRestaurant:places,
       restaurants: restaurants,
       names: restaurantNames,
       coordinates: coords,
-      marker: gmarkers
     })
   }
 
@@ -119,6 +119,8 @@ export default class RestaurantList extends Component{
       //set marker on map
       marker.setMap(map);
 
+      this.gmarkers.push(marker)
+
       let pano = this.props.sv;
       let processSVData = this.processSVData;
       //listen for click on marker 
@@ -128,13 +130,7 @@ export default class RestaurantList extends Component{
         pano.getPanoramaByLocation(marker.getPosition(), 50, processSVData);
       });
 
-      //save marker in state:
-      let thisMarker = this.state.googleMarkers.push(marker);
-
-      this.setState({
-        googleMarkers: thisMarker
-      })
-
+     
     }
  }
 

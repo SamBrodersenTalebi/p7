@@ -1,0 +1,40 @@
+[   {
+      "name":"Bronco",
+      "vicinity":"39 Rue des Petites Écuries, 75010 Paris",
+      "lat":55.862350,
+      "long":9.852370,
+      "reviews":[
+        {
+          "author_name":"Morten Olesen",
+          "rating":4,
+          "text":"Great! But not many veggie options."
+        },
+        {
+          "author_name":"Pia Kjær",
+          "rating":5,
+          "text":"My favorite restaurant!"
+        }
+      ],
+      "rating":4.5
+   },
+   {
+      "name":"Babalou",
+      "vicinity":"4 Rue Lamarck, 75018 Paris",
+      "lat":55.855798,
+      "long":9.846777,
+      "reviews":[
+        {
+          "author_name":"Louise Poulsen",
+          "rating":2,
+          "text":"Tiny pizzeria next to Sacre Coeur!"
+        },
+        {
+          "author_name":"Al Ulsted",
+          "rating":3,
+          "text":"Meh, it was fine."
+        }
+      ],
+      "rating":2.5
+   }
+   
+]
