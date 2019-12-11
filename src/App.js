@@ -55,17 +55,22 @@ class App extends Component{
     this.setState({
       map:map
     });
-    
-    //Turn form into own component 
-    //pass a function reference 
-    //update state from child component 
-    //call a function to give data to parent
-    //add marker on click
-  
 
+    let localData = this.state.data;
+    let googlePlaces = this.state.places
+
+    console.log(localData);
     //called after the map is done being dragged
-    window.google.maps.event.addListener(map, 'dragend', function() { 
+    window.google.maps.event.addListener(map, 'dragend', ()=>{ 
       alert('map dragged'); 
+      console.log(localData);
+      let local = this.showVisibleMarkers(map,localData);
+      let google = this.showVisibleMarkers(map,googlePlaces);
+      this.setState({
+        data:local,
+        places:google
+      });
+      console.log(this.state.data);
     } );
 
     //maps bounds
@@ -86,6 +91,35 @@ class App extends Component{
     });
     
   }
+
+  //Filter places that are within the currently displayed map and save the outcome to state.
+  showVisibleMarkers=(map,data)=>{
+    //if(window.google){
+    //getBound() shows the latitude and longitude for the corners of the visible area of the google map
+    const bounds = map.getBounds();
+
+    let filterData = data;
+    console.log(filterData);
+    /*
+    //filter the places to see if they are in bounds
+    const places = filterData.filter((place, index)=>{
+      const latlng = {
+        lat:place.lat,
+        lng:place.long
+      }
+      if(bounds.contains(latlng)===true){
+        //this means the marker is within the maps bounds
+      }else{
+        //delete the place object if it is not within the bounds, in this case bounds.contains(latlng) would return false
+        data.splice(index,1);
+      }
+    });
+    console.log(places);
+    return places;
+    }
+*/
+  }
+  
 
   initInfowindow=()=>{
     if(window.google){
