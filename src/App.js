@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import RestaurantList from './Components/RestaurantList/RestaurantList'
-//ZOOM IN ON MAP 
-//Rerender map when I move it 
-//GOOGLE MAP EVENT LISTENERS ZOOM and DRAG. 
-/*let lat = 0;
-let long = 0;
-*/
+import Form from './Components/Form/Form'
+
+
 class App extends Component{
   constructor(props){
     super(props);
@@ -64,24 +61,7 @@ class App extends Component{
     //update state from child component 
     //call a function to give data to parent
     //add marker on click
-    map.addListener('click',(e)=> {
-      console.log("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
-      let coordinates = {
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng() 
-      };
-      
-
-      let marker = new window.google.maps.Marker({
-        position:coordinates,
-        map:map
-      })
-
-      this.setState({
-        coordinates:coordinates
-      })
-
-    });
+  
 
     //called after the map is done being dragged
     window.google.maps.event.addListener(map, 'dragend', function() { 
@@ -95,15 +75,14 @@ class App extends Component{
     })
 
 
-
-
-    //when the map is done being created
-    //let ref = this.refs.restaurantList;
+    //when the map is done being created then call these functions
+    let ref = this.refs.mapClick;
     let info = this.initInfowindow;
     let service = this.placeService;
     window.google.maps.event.addListenerOnce(map, 'idle', function(){ 
       service();
       info();
+      ref.mapClickHandler();
     });
     
   }
@@ -148,53 +127,6 @@ class App extends Component{
     }
   }
 
-  //NEED TO ACCESS THE LAT AND LONG FROM THE ADDED MARKER.
-  handleSubmit=(event)=>{
-    console.log("I am entering the form")
-    const form = event.target;
-    //will not rerender browser
-    event.preventDefault();
-    /*const formData = new FormData(event.target);
-    console.log(formData)
-    */
-
-   //checks if the form is valid
-   if (!event.target.checkValidity()) {
-    // form is invalid! so we do nothing
-    //make border of input red!
-    this.setState({ displayErrors: true });
-    return;
-    }else{
-
-      let data = this.state.data;
-      //extract name 
-      let name = form.elements.name; 
-      //extract address
-      let address= form.elements.address;
-
-      //extract coordinates
-      let coordinates = form.elements.coordinates.value;
-
-      //save in an object
-      let object = {
-        "name":name,
-        "address":address,
-        "lat":coordinates.lat,
-        "long":coordinates.lng,
-        "reviews":[
-       ],
-      "rating":0
-     };
-     //push object to data and update the state
-      data.push(object);
-      this.setState({
-       data:data,
-       displayErrors: false
-      })
-    }
-  
-    
-  }
 
   placeService=()=>{
     if(window.google){
@@ -246,15 +178,20 @@ class App extends Component{
     }); 
   }
 
- 
-  
-  
-
-
 
   renderMap(){
    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDqguWie1TYNcPuCZh4de168PbvHdl0vZM&callback=initMap&libraries=places");
    window.initMap = this.initMap;
+ }
+
+ callbackFunctionForm = (childData)=>{
+   let data = this.state.data;
+   data.push(childData);
+   console.log(data);
+   this.setState({
+     data:data
+   });
+   this.refs.restaurantList.callRef()
  }
 
 
@@ -263,6 +200,7 @@ class App extends Component{
       <main>
           <h1 className="title">Restaurant Review Site</h1>
           <RestaurantList data = {this.state.data} places={this.state.places} map = {this.state.map} infowindow={this.state.infowindow} sv={this.state.sv} infowindowTitle={this.state.infowindowTitle} panorama = {this.state.panorama} ref="restaurantList"/>
+          <Form map ={this.state.map} parentCallback={this.callbackFunctionForm} ref="mapClick"/>
           <div id="map"></div>
          
       </main>
