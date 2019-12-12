@@ -56,68 +56,71 @@ class App extends Component{
       map:map
     });
 
-    let localData = this.state.data;
-    let googlePlaces = this.state.places
-
-    console.log(localData);
-    //called after the map is done being dragged
-    window.google.maps.event.addListener(map, 'dragend', ()=>{ 
-      alert('map dragged'); 
-      console.log(localData);
-      let local = this.showVisibleMarkers(map,localData);
-      let google = this.showVisibleMarkers(map,googlePlaces);
-      this.setState({
-        data:local,
-        places:google
-      });
-      console.log(this.state.data);
-    } );
-
-    //maps bounds
-    //called when zooming in and out on map
-    window.google.maps.event.addDomListener(map, 'zoom_changed', function(){
-      alert('zoom change')
-    })
-
-
     //when the map is done being created then call these functions
     let ref = this.refs.mapClick;
     let info = this.initInfowindow;
     let service = this.placeService;
+    let mapHandler = this.mapHandler;
     window.google.maps.event.addListenerOnce(map, 'idle', function(){ 
       service();
       info();
       ref.mapClickHandler();
+      mapHandler(map);
     });
     
   }
 
+  mapHandler =(map)=>{
+    let data = this.state.data
+    let googlePlaces = this.state.places
+    console.log(googlePlaces);
+
+    //called after the map is done being dragged
+    window.google.maps.event.addListener(map, 'dragend', ()=>{ 
+      alert('map dragged'); 
+      this.fetchLocalPlaces();
+      let local = this.showVisibleMarkersLocal(map,data);
+      this.setState({
+        data:local
+      },()=>{
+        this.refs.restaurantList.callRef();
+      });   
+    } );
+
+    
+    //called when zooming in and out on map
+    window.google.maps.event.addDomListener(map, 'zoom_changed', ()=>{
+      alert('zoom change');
+      this.fetchLocalPlaces();
+      let local = this.showVisibleMarkersLocal(map,data);
+      this.setState({
+        data:local
+      },()=>{
+        this.refs.restaurantList.callRef();
+      }); 
+    })
+  }
+
   //Filter places that are within the currently displayed map and save the outcome to state.
-  showVisibleMarkers=(map,data)=>{
-    //if(window.google){
+  showVisibleMarkersLocal=(map,data)=>{
     //getBound() shows the latitude and longitude for the corners of the visible area of the google map
     const bounds = map.getBounds();
-
-    let filterData = data;
-    console.log(filterData);
-    /*
-    //filter the places to see if they are in bounds
-    const places = filterData.filter((place, index)=>{
+    const placeData = []
+    //map the places to see if they are in bounds
+    data.map((place)=>{
       const latlng = {
         lat:place.lat,
         lng:place.long
       }
       if(bounds.contains(latlng)===true){
         //this means the marker is within the maps bounds
+        placeData.push(place);
       }else{
-        //delete the place object if it is not within the bounds, in this case bounds.contains(latlng) would return false
-        data.splice(index,1);
+        return;
       }
     });
-    console.log(places);
-    return places;
-    }
-*/
+    console.log(placeData);
+    return placeData;
   }
   
 

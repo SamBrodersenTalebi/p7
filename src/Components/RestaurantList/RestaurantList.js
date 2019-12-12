@@ -85,8 +85,6 @@ export default class RestaurantList extends Component{
     }
  
 
-    console.log(coords);
-    console.log(restaurantNames);
      for(let i = 0; i < coords.length; i++){
        this.addMarker(coords[i],restaurantNames[i]);
      }
