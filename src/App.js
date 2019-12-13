@@ -73,13 +73,14 @@ class App extends Component{
   mapHandler =(map)=>{
     let data = this.state.data
     let googlePlaces = this.state.places
+    //PLACES SERVICE IS NOT LOADED YET SO 0 IS LOGGED TO THE CONSOLE!
     console.log(googlePlaces);
 
     //called after the map is done being dragged
     window.google.maps.event.addListener(map, 'dragend', ()=>{ 
       alert('map dragged'); 
       this.fetchLocalPlaces();
-      let local = this.showVisibleMarkersLocal(map,data);
+      let local = this.showVisibleMarkers(map,data);
       this.setState({
         data:local
       },()=>{
@@ -92,7 +93,7 @@ class App extends Component{
     window.google.maps.event.addDomListener(map, 'zoom_changed', ()=>{
       alert('zoom change');
       this.fetchLocalPlaces();
-      let local = this.showVisibleMarkersLocal(map,data);
+      let local = this.showVisibleMarkers(map,data);
       this.setState({
         data:local
       },()=>{
@@ -102,7 +103,7 @@ class App extends Component{
   }
 
   //Filter places that are within the currently displayed map and save the outcome to state.
-  showVisibleMarkersLocal=(map,data)=>{
+  showVisibleMarkers=(map,data)=>{
     //getBound() shows the latitude and longitude for the corners of the visible area of the google map
     const bounds = map.getBounds();
     const placeData = []
@@ -236,9 +237,12 @@ class App extends Component{
     return(
       <main>
           <h1 className="title">Restaurant Review Site</h1>
-          <RestaurantList data = {this.state.data} places={this.state.places} map = {this.state.map} infowindow={this.state.infowindow} sv={this.state.sv} infowindowTitle={this.state.infowindowTitle} panorama = {this.state.panorama} ref="restaurantList"/>
+          <div id="flex-container">
+            <div id="map"></div>
+            <RestaurantList data = {this.state.data} places={this.state.places} map = {this.state.map} infowindow={this.state.infowindow} sv={this.state.sv} infowindowTitle={this.state.infowindowTitle} panorama = {this.state.panorama} ref="restaurantList"/>
+          </div>
+
           <Form map ={this.state.map} parentCallback={this.callbackFunctionForm} ref="mapClick"/>
-          <div id="map"></div>
          
       </main>
     );

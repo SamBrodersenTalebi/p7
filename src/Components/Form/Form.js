@@ -92,7 +92,7 @@ export default class Form extends Component{
             <div>
               {
                 this.state.toggleForm?
-                <form onSubmit={this.handleSubmit}>
+                <form onSubmit={this.handleSubmit} className="popUpForm">
                   <label className="info-name">Restaurant name:</label><br/>
                   <input name="resName" type="text" placeholder="Enter Name" required/> 
         

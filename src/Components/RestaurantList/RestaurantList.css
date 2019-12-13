@@ -1,7 +1,17 @@
 
-
 .flex-container{
   display:flex;
   justify-content: center;
   flex-wrap:wrap;
+}
+
+@media screen and (max-width: 1340px){
+  .flex-container{
+    display:block;
+    text-align: center;
+  }
+
+  .restaurant{
+    width:100% !important;
+  }
 }

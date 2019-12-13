@@ -1,6 +1,7 @@
 .restaurant{
   width:50%;
   margin-top:20px; 
+  border-bottom: 1px solid black;
 }
 
 .fat{
@@ -31,7 +32,7 @@ a:hover {
 .button {
   border: none;
   color: black;
-  padding: 20px;
+  padding: 7px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -58,7 +59,8 @@ a:hover {
 }
 
 .wrapper{
-  text-align:center
+  text-align:center;
+  
 }
 
 .review-toggle{

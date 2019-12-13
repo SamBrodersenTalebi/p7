@@ -4,9 +4,10 @@
 }
 
 .review{
-  width:100%;
+  width:80%;
 }
 
 .review p{
   text-align: center;
+  font-size:12px;
 }

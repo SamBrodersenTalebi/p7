@@ -10,7 +10,8 @@ export default class Restaurant extends Component{
       review: this.props.restaurant.reviews,
       text:'',
       rating:1,
-      showReview:false
+      showReview:false,
+      toggleRestaurant:false
     }
     this.toggleForm = this.toggleForm.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -48,6 +49,11 @@ export default class Restaurant extends Component{
 
   }
 
+  toggleRestaurant=()=>{
+    const { toggleRestaurant } = this.state;
+    this.setState({toggleRestaurant:!toggleRestaurant});
+  }
+
   render(){
     let i = 0;
     let review = this.state.review.map((rating)=>{
@@ -57,16 +63,56 @@ export default class Restaurant extends Component{
     })
     return(
       <div className="restaurant">
-        <h3 className="name">
+        <h3 className="name" onClick={this.toggleRestaurant}>
           {this.props.restaurant.name}
         </h3>
-        <p className="address">
-          <span className="fat">Restaurant Address: </span> <br/>{this.props.restaurant.vicinity}
-        </p>
-        <div className="wrapper">
-          <button className="review-header button" onClick={this.handleClick}>View reviews</button>
-        </div>
-        <div className="review-toggle">
+             <p className="address">
+               <span className="fat">Restaurant Address: </span> <br/>{this.props.restaurant.vicinity}
+            </p>
+            <div className="wrapper">
+              <button className="review-header button" onClick={this.handleClick}>View reviews</button>
+            </div>
+            <div className="review-toggle">
+            {
+             this.state.showReview?
+              review
+             :null
+            }
+            </div>
+            <div className="wrapper">
+              <button onClick = {this.toggleForm} className="button add-review"> Add review </button>
+              {
+                this.state.form?
+                <form onSubmit = {this.handleSubmit}>
+                  <input name="text" value={this.state.text} type="text" placeholder="please write review here" onChange = {this.handleChange}/>
+                  <select name="rating" value={this.state.rating} onChange={this.handleChange}>
+                    <option value="1"> 1 star </option>
+                    <option value="2"> 2 stars </option>
+                    <option value="3"> 3 stars </option>
+                    <option value="4"> 4 stars </option>
+                    <option value="5"> 5 star </option>
+                  </select>
+                  <button type="submit" className="submit"> Submit </button>
+                </form>
+              :null
+              }
+            </div>
+
+        
+      </div>
+    );
+  }
+}
+
+
+/*
+  <p className="address">
+            <span className="fat">Restaurant Address: </span> <br/>{this.props.restaurant.vicinity}
+          </p>
+          <div className="wrapper">
+            <button className="review-header button" onClick={this.handleClick}>View reviews</button>
+          </div>
+          <div className="review-toggle">
            {
              this.state.showReview?
               review
@@ -74,8 +120,8 @@ export default class Restaurant extends Component{
            }
           </div>
           <div className="wrapper">
-            <button onClick = {this.toggleForm} className="button add-review"> Add review </button>
-            {
+          <button onClick = {this.toggleForm} className="button add-review"> Add review </button>
+        {
           this.state.form?
           <form onSubmit = {this.handleSubmit}>
             <input name="text" value={this.state.text} type="text" placeholder="please write review here" onChange = {this.handleChange}/>
@@ -90,9 +136,7 @@ export default class Restaurant extends Component{
           </form>
           :null
         }
-          </div>
-        
-      </div>
-    );
-  }
-}
+        </div>
+          :null
+
+*/
