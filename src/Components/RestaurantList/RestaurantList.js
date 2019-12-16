@@ -40,7 +40,7 @@ export default class RestaurantList extends Component{
   }
 
   //call this method within the parent class (App.js)  
-  callRef(place){
+  callRef(){
     this.setRestaurant(this.state.maxValue, this.state.minValue);
   }
 

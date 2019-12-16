@@ -61,6 +61,7 @@ class App extends Component{
     let info = this.initInfowindow;
     let service = this.placeService;
     let mapHandler = this.mapHandler;
+
     window.google.maps.event.addListenerOnce(map, 'idle', function(){ 
       service();
       info();
@@ -78,6 +79,7 @@ class App extends Component{
       this.fetchLocalPlaces();
       let local = this.showVisibleMarkers(map,this.state.data);
       let googlePlaces = this.showVisibleMarkers(map,this.state.places);
+      console.log(local);
       console.log(googlePlaces);
       this.setState({
         data:local,
@@ -95,7 +97,6 @@ class App extends Component{
       this.fetchLocalPlaces();
       let local = this.showVisibleMarkers(map,this.state.data);
       let googlePlaces = this.showVisibleMarkers(map,this.state.places);
-      console.log(googlePlaces);
       this.setState({
         data:local,
         places: googlePlaces
@@ -132,7 +133,7 @@ class App extends Component{
         return;
       }
     });
-    console.log(placeData);
+
     return placeData;
   }
 
@@ -198,17 +199,20 @@ class App extends Component{
       service.nearbySearch(search, (results, status)=>{
         if(status === window.google.maps.places.PlacesServiceStatus.OK){ 
           let place = [];
-          let update = this.updatePlace
           //map over results and call getdetails
           results.map((object)=>{
             //map over results call getDetails on each result place inside of nearbysearch
            service.getDetails({
               placeId:object.place_id
-            }, function(detail,status){
+            }, (detail,status)=>{
               if(status === window.google.maps.places.PlacesServiceStatus.OK){
                 place.push(detail);
-                if(place.length === 5){
-                  update(place);
+                if(this.state.places === 0){
+                  if(place.length === 5){
+                    this.updatePlace(place);
+                  }
+                }else{
+                  this.setState({places:place}); 
                 }
               }
             })
@@ -226,7 +230,7 @@ class App extends Component{
   updatePlace=(place)=>{
     let ref = this.refs.restaurantList;
     this.setState({places:place},()=>{
-      ref.callRef(place)
+      ref.callRef();
     }); 
   }
 
