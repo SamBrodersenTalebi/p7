@@ -71,18 +71,17 @@ class App extends Component{
   }
 
   mapHandler =(map)=>{
-    let data = this.state.data
-    let googlePlaces = this.state.places
-    //PLACES SERVICE IS NOT LOADED YET SO 0 IS LOGGED TO THE CONSOLE!
-    console.log(googlePlaces);
-
     //called after the map is done being dragged
     window.google.maps.event.addListener(map, 'dragend', ()=>{ 
-      alert('map dragged'); 
+      console.log("map is dragged");
+      this.placeService();
       this.fetchLocalPlaces();
-      let local = this.showVisibleMarkers(map,data);
+      let local = this.showVisibleMarkers(map,this.state.data);
+      let googlePlaces = this.showVisibleMarkers(map,this.state.places);
+      console.log(googlePlaces);
       this.setState({
-        data:local
+        data:local,
+        places: googlePlaces
       },()=>{
         this.refs.restaurantList.callRef();
       });   
@@ -91,28 +90,41 @@ class App extends Component{
     
     //called when zooming in and out on map
     window.google.maps.event.addDomListener(map, 'zoom_changed', ()=>{
-      alert('zoom change');
+      console.log('zoom change');
+      this.placeService();
       this.fetchLocalPlaces();
-      let local = this.showVisibleMarkers(map,data);
+      let local = this.showVisibleMarkers(map,this.state.data);
+      let googlePlaces = this.showVisibleMarkers(map,this.state.places);
+      console.log(googlePlaces);
       this.setState({
-        data:local
+        data:local,
+        places: googlePlaces
       },()=>{
         this.refs.restaurantList.callRef();
-      }); 
+      });   
     })
   }
 
   //Filter places that are within the currently displayed map and save the outcome to state.
-  showVisibleMarkers=(map,data)=>{
+  showVisibleMarkers=(map,mapData)=>{
     //getBound() shows the latitude and longitude for the corners of the visible area of the google map
     const bounds = map.getBounds();
     const placeData = []
+    let latlng = 0;
     //map the places to see if they are in bounds
-    data.map((place)=>{
-      const latlng = {
-        lat:place.lat,
-        lng:place.long
+    mapData.map((place)=>{
+      if(mapData.length === 5){
+        latlng = {
+          lat:place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        }
+      }else{
+        latlng = {
+          lat:place.lat,
+          lng:place.long
+        }
       }
+     
       if(bounds.contains(latlng)===true){
         //this means the marker is within the maps bounds
         placeData.push(place);
@@ -123,6 +135,8 @@ class App extends Component{
     console.log(placeData);
     return placeData;
   }
+
+
   
 
   initInfowindow=()=>{
