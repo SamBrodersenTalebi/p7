@@ -11,7 +11,7 @@ export default class RestaurantList extends Component{
     this.state={
       minValue: 1,
       maxValue:5,
-      restaurants:"",
+      localRestaurants:"",
       coordinates:0,
       names:0,
       marker:0,
@@ -46,12 +46,12 @@ export default class RestaurantList extends Component{
 
 
 
-  setRestaurant=(maxValue, minValue)=>{
+  setRestaurant=(maxValue, minValue, data, isPlacesRes)=>{
     this.removeMarkers(this.gmarkers);
     let coords = [];
     let restaurantNames = [];
     let i = 0;
-    let restaurants = this.props.data.map((object)=>{
+    let localRestaurants = this.props.data.map((object)=>{
       //get average rating
      let rating = object.rating
       //if average rating is within filter then display restaurant
@@ -92,9 +92,7 @@ export default class RestaurantList extends Component{
 
      this.setState({
       placesRestaurant:places,
-      restaurants: restaurants,
-      names: restaurantNames,
-      coordinates: coords,
+      localRestaurants: localRestaurants
     })
   }
 
@@ -125,6 +123,7 @@ export default class RestaurantList extends Component{
       //processSVData is a callback will be called once getPanoramaByLocation is finished
       window.google.maps.event.addListener(marker, "click", function(){
         clickedMarker = marker;
+        // getPanoramaByLocation retrieves the StreetViewPanoramaData for a panorama within a given radius of the given LatLng.
         pano.getPanoramaByLocation(marker.getPosition(), 50, processSVData);
       });
 
@@ -173,7 +172,7 @@ openInfoWindow(marker) {
         <div className = "restaurantList">
           <Filter minValue = {this.state.minValue} maxValue={this.state.maxValue} minHandler = {this.minHandler} maxHandler = {this.maxHandler} />
           <div className="flex-container">
-            {this.state.restaurants}
+            {this.state.localRestaurants}
             {this.state.placesRestaurant}
           </div>
         </div>

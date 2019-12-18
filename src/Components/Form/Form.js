@@ -6,14 +6,12 @@ export default class Form extends Component{
         super(props);
         this.state={
           toggleForm:false
-        }
+        };
         this.coordinates = 0;
         this.toggleForm = false;
         this.object = 0;
     }
 
-    componentDidMount(){
-    }
 
     mapClickHandler=()=>{
       if(window.google){
@@ -72,7 +70,7 @@ export default class Form extends Component{
         };
 
         this.object = object;
-
+  
          this.state.toggleForm = !this.state.toggleForm;
          this.setState({
           toggleForm:this.state.toggleForm
@@ -83,7 +81,7 @@ export default class Form extends Component{
       }
 
       sendData=()=>{
-        //sends object to the parent 
+        //sends object to the parent and calll callbackfunction 
         this.props.parentCallback(this.object);
       }
 

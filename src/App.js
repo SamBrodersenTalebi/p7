@@ -9,9 +9,9 @@ class App extends Component{
     super(props);
     //make static data into JSON file. 
     this.state = {
-   data:[],
+   localData:[],
    map: 0,
-   places:0,
+   placesData:0,
    sv: 0,
    infowindow:0,
    displayErrors: false,
@@ -28,10 +28,12 @@ class App extends Component{
   fetchLocalPlaces=()=>{
     const endpoint = "data/restaurant.json";
 
+    //Content-Type header tells the client what the content type of the returned content actually is
     const headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json'
     };
+
     fetch(endpoint,{
       method:'get',
       headers: headers
@@ -39,7 +41,7 @@ class App extends Component{
     .then(res=> res.json())
     .then(data=>{
       this.setState({
-        data:data
+        localData:data
       });
     })
     .catch(err => console.error(err));
@@ -60,65 +62,59 @@ class App extends Component{
     let ref = this.refs.mapClick;
     let info = this.initInfowindow;
     let service = this.placeService;
-    let mapHandler = this.mapHandler;
+    let mapEventHandler = this.mapEventHandler;
 
     window.google.maps.event.addListenerOnce(map, 'idle', function(){ 
       service();
       info();
       ref.mapClickHandler();
-      mapHandler(map);
+      mapEventHandler(map);
     });
     
   }
 
-  mapHandler =(map)=>{
+  mapEventHandler =(map)=>{
     //called after the map is done being dragged
     window.google.maps.event.addListener(map, 'dragend', ()=>{ 
-      console.log("map is dragged");
-      this.placeService();
-      this.fetchLocalPlaces();
-      let local = this.showVisibleMarkers(map,this.state.data);
-      let googlePlaces = this.showVisibleMarkers(map,this.state.places);
-      console.log(local);
-      console.log(googlePlaces);
-      this.setState({
-        data:local,
-        places: googlePlaces
-      },()=>{
-        this.refs.restaurantList.callRef();
-      });   
+      this.showVisibleMarkers('map is dragged', map);
     } );
 
     
     //called when zooming in and out on map
     window.google.maps.event.addDomListener(map, 'zoom_changed', ()=>{
-      console.log('zoom change');
-      this.placeService();
-      this.fetchLocalPlaces();
-      let local = this.showVisibleMarkers(map,this.state.data);
-      let googlePlaces = this.showVisibleMarkers(map,this.state.places);
-      this.setState({
-        data:local,
-        places: googlePlaces
-      },()=>{
-        this.refs.restaurantList.callRef();
-      });   
+      this.showVisibleMarkers('map is zoomed',map)
     })
   }
 
+  //display the visible markers
+  showVisibleMarkers=(string, map)=>{
+    console.log(`${string}`);
+    this.placeService();
+    this.fetchLocalPlaces();
+    let local = this.returnVisibleMarkers(map,this.state.localData, false);
+    let googlePlaces = this.returnVisibleMarkers(map,this.state.placesData, true);
+    this.setState({
+      localData:local,
+      placesData: googlePlaces
+    },()=>{
+      this.refs.restaurantList.callRef();
+    });  
+  }
+
   //Filter places that are within the currently displayed map and save the outcome to state.
-  showVisibleMarkers=(map,mapData)=>{
+  returnVisibleMarkers=(map,mapData, fromGooglePlaces)=>{
     //getBound() shows the latitude and longitude for the corners of the visible area of the google map
     const bounds = map.getBounds();
-    const placeData = []
+    const placeData = [];
     let latlng = 0;
+    
     //map the places to see if they are in bounds
     mapData.map((place)=>{
-      if(mapData.length === 5){
+      if(fromGooglePlaces){
         latlng = {
           lat:place.geometry.location.lat(),
           lng: place.geometry.location.lng()
-        }
+        };
       }else{
         latlng = {
           lat:place.lat,
@@ -207,12 +203,12 @@ class App extends Component{
             }, (detail,status)=>{
               if(status === window.google.maps.places.PlacesServiceStatus.OK){
                 place.push(detail);
-                if(this.state.places === 0){
+                if(this.state.placesData === 0){
                   if(place.length === 5){
                     this.updatePlace(place);
                   }
                 }else{
-                  this.setState({places:place}); 
+                  this.setState({placesData:place}); 
                 }
               }
             })
@@ -229,7 +225,7 @@ class App extends Component{
 
   updatePlace=(place)=>{
     let ref = this.refs.restaurantList;
-    this.setState({places:place},()=>{
+    this.setState({placesData:place},()=>{
       ref.callRef();
     }); 
   }
@@ -241,11 +237,11 @@ class App extends Component{
  }
 
  callbackFunctionForm = (childData)=>{
-   let data = this.state.data;
+   let data = this.state.localData;
    data.push(childData);
    console.log(data);
    this.setState({
-     data:data
+     localData:data
    });
    this.refs.restaurantList.callRef()
  }
@@ -257,7 +253,7 @@ class App extends Component{
           <h1 className="title">Restaurant Review Site</h1>
           <div id="flex-container">
             <div id="map"></div>
-            <RestaurantList data = {this.state.data} places={this.state.places} map = {this.state.map} infowindow={this.state.infowindow} sv={this.state.sv} infowindowTitle={this.state.infowindowTitle} panorama = {this.state.panorama} ref="restaurantList"/>
+            <RestaurantList data = {this.state.localData} places={this.state.placesData} map = {this.state.map} infowindow={this.state.infowindow} sv={this.state.sv} infowindowTitle={this.state.infowindowTitle} panorama = {this.state.panorama} ref="restaurantList"/>
           </div>
 
           <Form map ={this.state.map} parentCallback={this.callbackFunctionForm} ref="mapClick"/>

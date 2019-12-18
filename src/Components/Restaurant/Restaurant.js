@@ -105,38 +105,3 @@ export default class Restaurant extends Component{
 }
 
 
-/*
-  <p className="address">
-            <span className="fat">Restaurant Address: </span> <br/>{this.props.restaurant.vicinity}
-          </p>
-          <div className="wrapper">
-            <button className="review-header button" onClick={this.handleClick}>View reviews</button>
-          </div>
-          <div className="review-toggle">
-           {
-             this.state.showReview?
-              review
-             :null
-           }
-          </div>
-          <div className="wrapper">
-          <button onClick = {this.toggleForm} className="button add-review"> Add review </button>
-        {
-          this.state.form?
-          <form onSubmit = {this.handleSubmit}>
-            <input name="text" value={this.state.text} type="text" placeholder="please write review here" onChange = {this.handleChange}/>
-            <select name="rating" value={this.state.rating} onChange={this.handleChange}>
-              <option value="1"> 1 star </option>
-              <option value="2"> 2 stars </option>
-              <option value="3"> 3 stars </option>
-              <option value="4"> 4 stars </option>
-              <option value="5"> 5 star </option>
-            </select>
-            <button type="submit" className="submit"> Submit </button>
-          </form>
-          :null
-        }
-        </div>
-          :null
-
-*/
