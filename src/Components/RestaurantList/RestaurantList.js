@@ -46,7 +46,7 @@ export default class RestaurantList extends Component{
 
 
 
-  setRestaurant=(maxValue, minValue, data, isPlacesRes)=>{
+  setRestaurant=(maxValue, minValue)=>{
     this.removeMarkers(this.gmarkers);
     let coords = [];
     let restaurantNames = [];
